@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block titulo %}Meu Painel{% endblock %}
+{% block conteudo %}
+<h1 class="h3 mb-4">Olá, {{ user.get_full_name|default:user.username }}!</h1>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <h2 class="h5"><i class="bi bi-journal-text"></i> Últimas aulas da sua turma</h2>
+        {% if not user.turma %}
+            <p class="text-muted">Você ainda não está matriculado em nenhuma turma. Fale com a administração.</p>
+        {% elif aulas %}
+            <div class="list-group mb-2">
+                {% for aula in aulas %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ aula.disciplina }}</strong>
+                        <span class="text-muted">{{ aula.data|date:'d/m/Y' }}</span>
+                    </div>
+                    <div class="text-muted small">{{ aula.conteudo|truncatewords:15 }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{% url 'diario:turma' user.turma_id %}" class="btn btn-outline-primary btn-sm">Ver diário completo</a>
+        {% else %}
+            <p class="text-muted">Ainda não há aulas registradas para a sua turma.</p>
+        {% endif %}
+    </div>
+
+    <div class="col-md-6">
+        <h2 class="h5"><i class="bi bi-book-half"></i> Livros recentes na biblioteca</h2>
+        {% if livros %}
+            <div class="list-group mb-2">
+                {% for livro in livros %}
+                <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="list-group-item list-group-item-action">
+                    {{ livro.titulo }} <span class="text-muted">— {{ livro.autor }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">Nenhum livro disponível ainda.</p>
+        {% endif %}
+        <a href="{% url 'biblioteca:lista' %}" class="btn btn-outline-primary btn-sm">Ver biblioteca completa</a>
+    </div>
+</div>
+{% endblock %}

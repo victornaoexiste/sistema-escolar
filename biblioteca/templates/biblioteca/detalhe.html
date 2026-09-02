@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ livro.titulo }}{% endblock %}
+{% block conteudo %}
+<a href="{% url 'biblioteca:lista' %}" class="btn btn-link ps-0"><i class="bi bi-arrow-left"></i> Voltar à biblioteca</a>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        {% if livro.capa %}
+        <img src="{{ livro.capa.url }}" class="img-fluid rounded shadow-sm" alt="Capa de {{ livro.titulo }}">
+        {% else %}
+        <div class="bg-secondary-subtle d-flex align-items-center justify-content-center rounded" style="height:300px;">
+            <i class="bi bi-file-earmark-pdf" style="font-size:4rem;"></i>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-8">
+        <h1 class="h3">{{ livro.titulo }}</h1>
+        <p class="text-muted">{{ livro.autor }}{% if livro.categoria %} · {{ livro.categoria }}{% endif %}</p>
+        {% if livro.descricao %}<p>{{ livro.descricao }}</p>{% endif %}
+        <p class="text-muted small">Enviado por {{ livro.enviado_por }} em {{ livro.enviado_em|date:'d/m/Y' }}</p>
+
+        <div class="d-flex gap-2 mt-3">
+            <a href="{% url 'biblioteca:baixar' livro.pk %}" class="btn btn-primary"><i class="bi bi-download"></i> Baixar</a>
+            <a href="#leitor" class="btn btn-outline-primary"><i class="bi bi-book"></i> Ler online</a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4" id="leitor">
+    <h2 class="h5">Leitura online</h2>
+    <iframe src="{{ livro.arquivo.url }}" style="width:100%;height:80vh;border:1px solid #dee2e6;border-radius:4px;"></iframe>
+</div>
+{% endblock %}

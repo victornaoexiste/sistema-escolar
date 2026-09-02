@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block titulo %}Painel do Professor{% endblock %}
+{% block conteudo %}
+<h1 class="h3 mb-4">Olá, {{ user.get_full_name|default:user.username }}!</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-journal-plus"></i> Lançar aula</h2>
+                <p class="text-muted">Registre o conteúdo dado hoje e marque a presença dos alunos.</p>
+                <a href="{% url 'diario:nova_aula' %}" class="btn btn-primary btn-sm">Lançar aula</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-book-half"></i> Biblioteca Virtual</h2>
+                <p class="text-muted">Envie livros para os alunos lerem ou baixarem.</p>
+                <a href="{% url 'biblioteca:enviar' %}" class="btn btn-primary btn-sm">Enviar livro</a>
+                <a href="{% url 'biblioteca:lista' %}" class="btn btn-outline-secondary btn-sm">Ver acervo</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h5">Últimas aulas lançadas</h2>
+{% if aulas %}
+<div class="list-group">
+    {% for aula in aulas %}
+    <a href="{% url 'diario:turma' aula.turma_id %}" class="list-group-item list-group-item-action d-flex justify-content-between">
+        <span>{{ aula.turma }} — {{ aula.disciplina }}</span>
+        <span class="text-muted">{{ aula.data|date:'d/m/Y' }}</span>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">Você ainda não lançou nenhuma aula.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block titulo %}Presença — {{ aula.turma }}{% endblock %}
+{% block conteudo %}
+<h1 class="h3 mb-1">Presença — {{ aula.turma }} · {{ aula.disciplina }}</h1>
+<p class="text-muted mb-4">{{ aula.data|date:'d/m/Y' }}</p>
+
+{% if linhas %}
+<form method="post">
+    {% csrf_token %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th class="text-end">Presente</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for linha in linhas %}
+                <tr>
+                    <td>{{ linha.aluno.get_full_name|default:linha.aluno.username }}</td>
+                    <td class="text-end">
+                        <input type="checkbox" class="form-check-input" name="presente_{{ linha.aluno.pk }}" {% if linha.presente %}checked{% endif %}>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar presença</button>
+</form>
+{% else %}
+<p class="text-muted">Não há alunos matriculados na turma {{ aula.turma }} ainda.</p>
+{% endif %}
+{% endblock %}

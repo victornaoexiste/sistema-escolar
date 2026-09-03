@@ -26,7 +26,7 @@
                 <th>Disciplina</th>
                 <th>Professor</th>
                 <th>Conteúdo</th>
-                {% if user.is_admin or user.is_professor %}<th></th>{% endif %}
+                {% if user.is_admin or user.is_professor or user.is_secretaria %}<th></th>{% endif %}
             </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@
                 <td>{{ aula.disciplina }}</td>
                 <td>{{ aula.professor }}</td>
                 <td>{{ aula.conteudo }}</td>
-                {% if user.is_admin or user.is_professor %}
+                {% if user.is_admin or user.is_professor or user.is_secretaria %}
                 <td><a href="{% url 'diario:presenca' aula.pk %}" class="btn btn-outline-secondary btn-sm">Presença</a></td>
                 {% endif %}
             </tr>

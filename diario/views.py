@@ -77,7 +77,7 @@ def presenca_rapida(request):
     return render(request, 'diario/presenca_rapida.html', {'form': form})
 
 
-@somente('admin', 'professor')
+@somente('admin', 'professor', 'secretaria')
 def presenca(request, pk):
     aula = get_object_or_404(Aula, pk=pk)
     alunos = Usuario.objects.filter(tipo=Usuario.Tipo.ALUNO, turma=aula.turma).order_by('first_name', 'username')

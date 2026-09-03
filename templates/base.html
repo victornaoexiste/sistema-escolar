@@ -29,6 +29,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'diario:turmas' %}">Diário Escolar</a>
                 </li>
+                {% if user.is_admin or user.is_secretaria %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contas:alunos_lista' %}">Alunos</a>
+                </li>
+                {% endif %}
                 {% if user.is_admin %}
                 <li class="nav-item">
                     <a class="nav-link" href="/admin/">Administração</a>

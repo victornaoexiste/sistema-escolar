@@ -21,6 +21,16 @@ class Command(BaseCommand):
             )
             self.stdout.write(self.style.SUCCESS('Criado: admin / admin123'))
 
+        if not Usuario.objects.filter(username='secretaria1').exists():
+            Usuario.objects.create_user(
+                username='secretaria1',
+                password='secretaria123',
+                first_name='Maria',
+                last_name='Secretaria',
+                tipo=Usuario.Tipo.SECRETARIA,
+            )
+            self.stdout.write(self.style.SUCCESS('Criado: secretaria1 / secretaria123'))
+
         if not Usuario.objects.filter(username='professor1').exists():
             Usuario.objects.create_user(
                 username='professor1',
@@ -39,6 +49,7 @@ class Command(BaseCommand):
                 last_name='Aluno',
                 tipo=Usuario.Tipo.ALUNO,
                 turma=turma,
+                matricula='2026001',
             )
             self.stdout.write(self.style.SUCCESS('Criado: aluno1 / aluno123'))
 

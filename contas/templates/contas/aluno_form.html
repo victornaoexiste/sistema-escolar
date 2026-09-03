@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<a href="{% url 'contas:alunos_lista' %}" class="btn btn-link ps-0"><i class="bi bi-arrow-left"></i> Voltar aos alunos</a>
+
+<h1 class="h3 mb-4"><i class="bi bi-person-plus"></i> {{ titulo }}</h1>
+
+<form method="post" class="col-md-8">
+    {% csrf_token %}
+    {% for campo in form %}
+    <div class="mb-3">
+        <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+        {{ campo }}
+        {% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}
+        {% for erro in campo.errors %}<div class="text-danger small">{{ erro }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+{% endblock %}

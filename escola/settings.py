@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,10 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-w^artmzw3u9zj&v##%j+sa#r*tk1v*5@d53u_43rdj0=m=6v1f'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Por padrão roda em modo desenvolvimento (DEBUG=True). O script tailscale_run.sh
+# define DJANGO_DEBUG=False antes de expor o servidor publicamente pelo Funnel.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() != 'false'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
+
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
 
 
 # Application definition

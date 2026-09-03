@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from contas.decorators import somente
 
-from .forms import AulaForm
+from .forms import AulaForm, PresencaRapidaForm
 from .models import Aula, Presenca, Turma
 
 Usuario = get_user_model()
@@ -58,6 +58,23 @@ def nova_aula(request):
     else:
         form = AulaForm()
     return render(request, 'diario/nova_aula.html', {'form': form})
+
+
+@somente('admin', 'professor')
+def presenca_rapida(request):
+    if request.method == 'POST':
+        form = PresencaRapidaForm(request.POST)
+        if form.is_valid():
+            aula, _ = Aula.objects.get_or_create(
+                turma=form.cleaned_data['turma'],
+                disciplina=form.cleaned_data['disciplina'],
+                data=form.cleaned_data['data'],
+                defaults={'professor': request.user, 'conteudo': ''},
+            )
+            return redirect('diario:presenca', pk=aula.pk)
+    else:
+        form = PresencaRapidaForm()
+    return render(request, 'diario/presenca_rapida.html', {'form': form})
 
 
 @somente('admin', 'professor')

@@ -1,16 +1,17 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from diario.models import Disciplina, Turma
+from diario.models import Curso, Disciplina, Turma
 
 Usuario = get_user_model()
 
 
 class Command(BaseCommand):
-    help = 'Cria usuários e dados de exemplo (admin, professor, aluno, turma) para testar o sistema.'
+    help = 'Cria usuários e dados de exemplo (admin, professor, aluno, curso, turma) para testar o sistema.'
 
     def handle(self, *args, **options):
-        turma, _ = Turma.objects.get_or_create(nome='9º Ano A', defaults={'ano_letivo': 2026})
+        curso, _ = Curso.objects.get_or_create(nome='Técnico em Informática')
+        turma, _ = Turma.objects.get_or_create(curso=curso, modulo=2, identificador='', defaults={'ano_letivo': 2026})
         Disciplina.objects.get_or_create(nome='Matemática')
         Disciplina.objects.get_or_create(nome='Português')
 

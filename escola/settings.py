@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # Em produção/Funnel, defina DJANGO_SECRET_KEY com uma chave própria (não versionada).
 SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY', 'django-insecure-REDACTED-ROTATE-THIS-KEY'
+    'DJANGO_SECRET_KEY', 'django-insecure-4f84w!gz%=^=%-t8(ay868wa!r@mxk7fkz80yqtzky2)s42r#('
 )
 
 # Por padrão roda em modo desenvolvimento (DEBUG=True). O script tailscale_run.sh

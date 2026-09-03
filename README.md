@@ -58,7 +58,7 @@ Depois disso, sempre que quiser gerar o link de teste:
 ./tailscale_run.sh
 ```
 
-O script imprime um link tipo `https://fedora.tail16a68b.ts.net` — é só mandar esse link. Ele fica no ar enquanto o script estiver rodando; aperte `Ctrl+C` pra encerrar (derruba o servidor e desliga o Funnel automaticamente).
+O script imprime um link tipo `https://<sua-maquina>.<seu-tailnet>.ts.net` — é só mandar esse link. Ele fica no ar enquanto o script estiver rodando; aperte `Ctrl+C` pra encerrar (derruba o servidor e desliga o Funnel automaticamente).
 
 > Enquanto o link estiver ativo, **qualquer pessoa com o link acessa o sistema** — troque as senhas de demonstração (veja a tabela abaixo) antes de compartilhar de verdade, e derrube o túnel (`Ctrl+C`) quando terminar o teste.
 

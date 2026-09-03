@@ -30,6 +30,8 @@ fi
 export DJANGO_DEBUG=False
 export DJANGO_ALLOWED_HOSTS="$HOSTNAME,127.0.0.1,localhost"
 export DJANGO_CSRF_TRUSTED_ORIGINS="https://$HOSTNAME"
+# Chave própria pra essa sessão exposta publicamente (não é a do repositório).
+export DJANGO_SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(50))")
 
 echo "Aviso: enquanto este script roda, o sistema fica acessível por qualquer pessoa que tenha o link."
 echo "Troque as senhas de demonstração (admin123 etc.) antes de compartilhar de verdade."

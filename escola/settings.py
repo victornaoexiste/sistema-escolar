@@ -21,7 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w^artmzw3u9zj&v##%j+sa#r*tk1v*5@d53u_43rdj0=m=6v1f'
+# Em produção/Funnel, defina DJANGO_SECRET_KEY com uma chave própria (não versionada).
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY', 'django-insecure-w^artmzw3u9zj&v##%j+sa#r*tk1v*5@d53u_43rdj0=m=6v1f'
+)
 
 # Por padrão roda em modo desenvolvimento (DEBUG=True). O script tailscale_run.sh
 # define DJANGO_DEBUG=False antes de expor o servidor publicamente pelo Funnel.

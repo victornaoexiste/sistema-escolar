@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block titulo %}Marcar presença{% endblock %}
+{% block conteudo %}
+<h1 class="h3 mb-1"><i class="bi bi-check2-square"></i> Marcar presença</h1>
+<p class="text-muted mb-4">Sem precisar preencher o conteúdo da aula — se já existir uma aula lançada nessa turma/disciplina/data, a presença é adicionada nela.</p>
+
+<form method="post" class="col-md-8">
+    {% csrf_token %}
+    {% for campo in form %}
+    <div class="mb-3">
+        <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+        {{ campo }}
+        {% for erro in campo.errors %}<div class="text-danger small">{{ erro }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Continuar</button>
+</form>
+{% endblock %}

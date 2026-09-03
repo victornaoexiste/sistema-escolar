@@ -4,7 +4,7 @@
 <h1 class="h3 mb-4">Olá, {{ user.get_full_name|default:user.username }}!</h1>
 
 <div class="row g-3 mb-4">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
                 <h2 class="h5"><i class="bi bi-journal-plus"></i> Lançar aula</h2>
@@ -13,7 +13,16 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-check2-square"></i> Marcar presença</h2>
+                <p class="text-muted">Só a chamada, sem precisar preencher o conteúdo da aula.</p>
+                <a href="{% url 'diario:presenca_rapida' %}" class="btn btn-primary btn-sm">Marcar presença</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
                 <h2 class="h5"><i class="bi bi-book-half"></i> Biblioteca Virtual</h2>

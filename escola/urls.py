@@ -12,5 +12,6 @@ urlpatterns = [
     path('diario/', include('diario.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Projeto pequeno/demo: mídia (capas e PDFs) sempre servida pelo Django,
+# mesmo com DEBUG=False (necessário pro modo Tailscale Funnel).
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

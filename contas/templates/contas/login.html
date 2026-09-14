@@ -1,38 +1,67 @@
 {% extends 'base.html' %}
-{% block titulo %}Entrar — Sistema Escolar{% endblock %}
+{% block titulo %}Entrar — Vereda{% endblock %}
 {% block conteudo %}
-<style>
-    body{ background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 45%, #F7F6F2 45%); }
-</style>
-<div class="row justify-content-center">
-    <div class="col-11 col-sm-8 col-md-6 col-lg-4">
-        <div class="card shadow-lg border-0 mt-5">
-            <div class="card-body p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <div class="icon-badge bg-2 mx-auto"><i class="bi bi-mortarboard-fill"></i></div>
-                    <h1 class="h4 mb-1">Sistema Escolar</h1>
-                    <p class="text-muted small mb-0">Entre com seu usuário e senha</p>
-                </div>
+<div class="login-shell mx-auto mt-4 mt-md-5">
+    <div class="login-intro">
+        <div class="login-mark"><i class="bi bi-rulers"></i></div>
+        <h1 class="h3 mb-2">Vereda</h1>
+        <p class="mb-0">Ensino técnico e as trilhas do futuro, num só lugar — aulas, horários, frequência e avisos.</p>
+    </div>
+    <div class="login-form">
+        <h2 class="h5 mb-1">Entrar</h2>
+        <p class="text-muted small mb-4">Use o usuário e a senha que a secretaria cadastrou.</p>
 
-                {% if form.errors %}
-                    <div class="alert alert-danger py-2"><i class="bi bi-exclamation-triangle-fill"></i> Usuário ou senha inválidos.</div>
-                {% endif %}
+        {% if form.errors %}
+            <div class="alert alert-danger py-2 d-flex align-items-center gap-2"><i class="bi bi-exclamation-triangle-fill"></i> Usuário ou senha inválidos.</div>
+        {% endif %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label" for="{{ form.username.id_for_label }}">Usuário</label>
-                        <input type="text" name="username" class="form-control" id="{{ form.username.id_for_label }}" required autofocus>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label" for="{{ form.password.id_for_label }}">Senha</label>
-                        <input type="password" name="password" class="form-control" id="{{ form.password.id_for_label }}" required>
-                    </div>
-                    <input type="hidden" name="next" value="{{ next }}">
-                    <button type="submit" class="btn btn-primary btn-lg w-100">Entrar <i class="bi bi-arrow-right-circle-fill"></i></button>
-                </form>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ form.username.id_for_label }}">Usuário</label>
+                <input type="text" name="username" class="form-control" id="{{ form.username.id_for_label }}" required autofocus>
             </div>
-        </div>
+            <div class="mb-4">
+                <label class="form-label" for="{{ form.password.id_for_label }}">Senha</label>
+                <input type="password" name="password" class="form-control" id="{{ form.password.id_for_label }}" required>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" class="btn btn-primary btn-lg w-100">Entrar</button>
+        </form>
     </div>
 </div>
+
+<style>
+    .login-shell{
+        max-width: 880px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        border:1px solid var(--line);
+        border-radius:.75rem;
+        overflow:hidden;
+    }
+    .login-intro{
+        background:var(--ink); color:#FAF8F1;
+        padding:3rem 2.5rem;
+        display:flex; flex-direction:column; justify-content:center;
+    }
+    .login-intro p{ color:rgba(250,248,241,.75); }
+    .login-mark{
+        width:52px; height:52px; border-radius:.5rem;
+        display:inline-flex; align-items:center; justify-content:center;
+        font-size:1.4rem; color:var(--accent);
+        border:1.5px solid rgba(250,248,241,.25);
+        margin-bottom:1.5rem;
+    }
+    .login-form{
+        background:var(--surface);
+        padding:3rem 2.5rem;
+        display:flex; flex-direction:column; justify-content:center;
+    }
+    @media (max-width: 767.98px){
+        .login-shell{ grid-template-columns: 1fr; }
+        .login-intro{ padding:2rem 1.75rem; }
+        .login-form{ padding:2rem 1.75rem; }
+    }
+</style>
 {% endblock %}

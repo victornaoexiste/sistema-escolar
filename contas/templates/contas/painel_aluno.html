@@ -3,9 +3,120 @@
 {% block conteudo %}
 <h1 class="h3 mb-4">Olá, {{ user.get_full_name|default:user.username }}!</h1>
 
+{% if minha_frequencia_geral is not None and minha_frequencia_geral < 75 %}
+<div class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+    <div>
+        <strong>Atenção:</strong> sua frequência geral está em <strong>{{ minha_frequencia_geral }}%</strong>, abaixo do mínimo de 75%.
+        <a href="{% url 'diario:turma' user.turma_id %}" class="alert-link">Veja o detalhe por disciplina</a>.
+    </div>
+</div>
+{% endif %}
+
+<!-- Destaque: quadro de avisos + horário do dia, o que o aluno vem ver primeiro -->
+<div class="row g-4 mb-1">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="icon-badge bg-4"><i class="bi bi-megaphone-fill"></i></div>
+                    <a href="{% url 'avisos:lista' %}" class="small">Ver todos</a>
+                </div>
+                <h2 class="h5">Quadro de avisos</h2>
+                {% if avisos_recentes %}
+                    <div class="vstack gap-3">
+                        {% for aviso in avisos_recentes %}
+                        <div class="{% if not forloop.last %}pb-3 border-bottom{% endif %}">
+                            <div class="d-flex justify-content-between align-items-baseline gap-2">
+                                <strong>{{ aviso.titulo }}</strong>
+                                <span class="text-muted small font-mono flex-shrink-0">{{ aviso.criado_em|date:'d/m' }}</span>
+                            </div>
+                            <div class="text-muted small">{{ aviso.corpo|truncatewords:20 }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Nenhum aviso no momento.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="icon-badge bg-2"><i class="bi bi-calendar-check"></i></div>
+                    <a href="{% url 'diario:horarios' %}" class="small">Semana completa</a>
+                </div>
+                <h2 class="h5">Aulas de hoje</h2>
+                {% if not user.turma %}
+                    <p class="text-muted">Você ainda não está matriculado em nenhuma turma.</p>
+                {% elif horarios_hoje %}
+                    <div class="vstack gap-2">
+                        {% for h in horarios_hoje %}
+                        <div class="d-flex justify-content-between align-items-baseline {% if not forloop.last %}pb-2 border-bottom{% endif %}">
+                            <span><strong>{{ h.disciplina }}</strong>{% if h.sala %} <span class="text-muted small">· Sala {{ h.sala }}</span>{% endif %}</span>
+                            <span class="text-muted font-mono flex-shrink-0">{{ h.hora_inicio|time:'H:i' }}–{{ h.hora_fim|time:'H:i' }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Sem aulas hoje.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4" style="border-color: var(--line);">
+
 <div class="row g-4">
-    <div class="col-md-6">
-        <div class="card h-100 shadow-sm">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="icon-badge {% if minha_frequencia_geral is not None and minha_frequencia_geral < 75 %}bg-4{% else %}bg-3{% endif %}"><i class="bi bi-bar-chart-fill"></i></div>
+                <h2 class="h5">Minha frequência</h2>
+                {% if minha_frequencia_geral is not None %}
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="progress flex-grow-1" style="height: 10px;">
+                            <div class="progress-bar {% if minha_frequencia_geral < 60 %}bg-danger{% elif minha_frequencia_geral < 75 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ minha_frequencia_geral|stringformat:'s' }}%;"></div>
+                        </div>
+                        <span class="small text-muted fw-semibold font-mono">{{ minha_frequencia_geral }}%</span>
+                    </div>
+                    <p class="text-muted small">Mínimo exigido por disciplina: 75%.</p>
+                {% else %}
+                    <p class="text-muted">Você ainda não está matriculado em nenhuma turma.</p>
+                {% endif %}
+                <a href="{% url 'diario:turma' user.turma_id %}" class="btn btn-primary btn-sm">Ver por disciplina</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="icon-badge bg-1"><i class="bi bi-calendar3"></i></div>
+                <h2 class="h5">Próximos eventos</h2>
+                {% if proximos_eventos %}
+                    <div class="list-group mb-3">
+                        {% for evento in proximos_eventos %}
+                        <div class="list-group-item d-flex justify-content-between">
+                            <span>{{ evento.titulo }}</span>
+                            <span class="text-muted small font-mono">{{ evento.data_inicio|date:'d/m' }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Nenhum evento agendado.</p>
+                {% endif %}
+                <a href="{% url 'calendario:lista' %}" class="btn btn-primary btn-sm">Ver calendário</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
             <div class="card-body">
                 <div class="icon-badge bg-3"><i class="bi bi-journal-text"></i></div>
                 <h2 class="h5">Últimas aulas da sua turma</h2>
@@ -23,7 +134,7 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <a href="{% url 'diario:turma' user.turma_id %}" class="btn btn-primary btn-sm">Ver diário completo <i class="bi bi-arrow-right"></i></a>
+                    <a href="{% url 'diario:turma' user.turma_id %}" class="btn btn-primary btn-sm">Ver diário completo</a>
                 {% else %}
                     <p class="text-muted">Ainda não há aulas registradas para a sua turma.</p>
                 {% endif %}
@@ -31,8 +142,8 @@
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="card h-100 shadow-sm">
+    <div class="col-md-4">
+        <div class="card h-100">
             <div class="card-body">
                 <div class="icon-badge bg-1"><i class="bi bi-book-half"></i></div>
                 <h2 class="h5">Livros recentes na biblioteca</h2>
@@ -47,7 +158,18 @@
                 {% else %}
                     <p class="text-muted">Nenhum livro disponível ainda.</p>
                 {% endif %}
-                <a href="{% url 'biblioteca:lista' %}" class="btn btn-primary btn-sm">Ver biblioteca completa <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'biblioteca:lista' %}" class="btn btn-primary btn-sm">Ver biblioteca completa</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="icon-badge bg-2"><i class="bi bi-file-earmark-text-fill"></i></div>
+                <h2 class="h5">Meus documentos</h2>
+                <p class="text-muted">Declaração de matrícula e extrato de frequência em PDF, na hora.</p>
+                <a href="{% url 'contas:documentos' %}" class="btn btn-primary btn-sm">Gerar documentos</a>
             </div>
         </div>
     </div>

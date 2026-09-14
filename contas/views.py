@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .decorators import somente
+from .documentos import gerar_declaracao_matricula, gerar_extrato_frequencia
 from .forms import AlunoCadastroForm, AlunoEdicaoForm
 from .models import Usuario
 
@@ -17,12 +19,22 @@ class TelaLogin(auth_views.LoginView):
 def painel(request):
     usuario = request.user
 
-    if usuario.is_admin:
-        return render(request, 'contas/painel_admin.html')
+    if usuario.is_admin or usuario.is_secretaria:
+        from calendario.models import EventoCalendario
+        from diario.frequencia import alunos_em_risco_por_turma
 
-    if usuario.is_secretaria:
         alunos_count = Usuario.objects.filter(tipo=Usuario.Tipo.ALUNO).count()
-        return render(request, 'contas/painel_secretaria.html', {'alunos_count': alunos_count})
+        turmas_em_risco = alunos_em_risco_por_turma()
+        proximos_eventos = EventoCalendario.objects.futuros()[:3]
+        contexto = {
+            'alunos_count': alunos_count,
+            'turmas_em_risco': turmas_em_risco,
+            'proximos_eventos': proximos_eventos,
+        }
+
+        if usuario.is_admin:
+            return render(request, 'contas/painel_admin.html', contexto)
+        return render(request, 'contas/painel_secretaria.html', contexto)
 
     if usuario.is_professor:
         from diario.models import Aula
@@ -30,14 +42,47 @@ def painel(request):
         aulas = Aula.objects.filter(professor=usuario).order_by('-data')[:5]
         return render(request, 'contas/painel_professor.html', {'aulas': aulas})
 
-    from diario.models import Aula
+    from django.db.models import Q
+    from django.utils import timezone
+
+    from avisos.models import Aviso
     from biblioteca.models import Livro
+    from calendario.models import EventoCalendario
+    from diario.frequencia import frequencia_geral
+    from diario.models import Aula
 
     aulas = []
+    horarios_hoje = []
+    minha_frequencia_geral = None
     if usuario.turma:
         aulas = Aula.objects.filter(turma=usuario.turma).order_by('-data')[:5]
+        hoje = timezone.localdate()
+        horarios_hoje = usuario.turma.horarios.filter(dia_semana=hoje.weekday()).select_related('disciplina', 'professor')
+        minha_frequencia_geral = frequencia_geral(usuario.turma, usuario)
+
     livros = Livro.objects.order_by('-enviado_em')[:5]
-    return render(request, 'contas/painel_aluno.html', {'aulas': aulas, 'livros': livros})
+
+    filtro_avisos = Q(publico=Aviso.Publico.TODOS)
+    filtro_eventos = Q(turma__isnull=True)
+    if usuario.turma:
+        filtro_avisos |= Q(publico=Aviso.Publico.TURMA, turma=usuario.turma)
+        filtro_avisos |= Q(publico=Aviso.Publico.CURSO, curso=usuario.turma.curso)
+        filtro_eventos |= Q(turma=usuario.turma)
+    avisos_recentes = Aviso.objects.filter(filtro_avisos).order_by('-criado_em')[:5]
+    proximos_eventos = EventoCalendario.objects.futuros().filter(filtro_eventos)[:3]
+
+    return render(
+        request,
+        'contas/painel_aluno.html',
+        {
+            'aulas': aulas,
+            'livros': livros,
+            'horarios_hoje': horarios_hoje,
+            'avisos_recentes': avisos_recentes,
+            'minha_frequencia_geral': minha_frequencia_geral,
+            'proximos_eventos': proximos_eventos,
+        },
+    )
 
 
 @somente('admin', 'secretaria')
@@ -63,6 +108,57 @@ def aluno_novo(request):
     else:
         form = AlunoCadastroForm()
     return render(request, 'contas/aluno_form.html', {'form': form, 'titulo': 'Cadastrar aluno'})
+
+
+def _resolver_aluno_documento(request, pk):
+    """Aluno só gera o próprio documento; admin/secretaria podem gerar de qualquer aluno."""
+    if pk is not None:
+        if not (request.user.is_admin or request.user.is_secretaria):
+            return None
+        return get_object_or_404(Usuario, pk=pk, tipo=Usuario.Tipo.ALUNO)
+    if request.user.is_aluno:
+        return request.user
+    return None
+
+
+@login_required
+def documentos(request):
+    if not request.user.is_aluno:
+        messages.error(request, 'Essa página é só para alunos. Gere documentos de um aluno pela lista de Alunos.')
+        return redirect('contas:painel')
+    return render(request, 'contas/documentos.html')
+
+
+@login_required
+def documento_declaracao(request, pk=None):
+    aluno = _resolver_aluno_documento(request, pk)
+    if aluno is None:
+        messages.error(request, 'Você não tem permissão para gerar esse documento.')
+        return redirect('contas:painel')
+    if not aluno.turma:
+        messages.error(request, f'{aluno.get_full_name() or aluno.username} não está matriculado(a) em nenhuma turma ainda.')
+        return redirect('contas:alunos_lista' if pk else 'contas:painel')
+
+    pdf = gerar_declaracao_matricula(aluno)
+    resposta = HttpResponse(pdf, content_type='application/pdf')
+    resposta['Content-Disposition'] = f'inline; filename="declaracao_matricula_{aluno.username}.pdf"'
+    return resposta
+
+
+@login_required
+def documento_frequencia(request, pk=None):
+    aluno = _resolver_aluno_documento(request, pk)
+    if aluno is None:
+        messages.error(request, 'Você não tem permissão para gerar esse documento.')
+        return redirect('contas:painel')
+    if not aluno.turma:
+        messages.error(request, f'{aluno.get_full_name() or aluno.username} não está matriculado(a) em nenhuma turma ainda.')
+        return redirect('contas:alunos_lista' if pk else 'contas:painel')
+
+    pdf = gerar_extrato_frequencia(aluno)
+    resposta = HttpResponse(pdf, content_type='application/pdf')
+    resposta['Content-Disposition'] = f'inline; filename="extrato_frequencia_{aluno.username}.pdf"'
+    return resposta
 
 
 @somente('admin', 'secretaria')

@@ -2,12 +2,13 @@ from django import forms
 
 from .models import Usuario
 
-_CAMPOS_ALUNO = ['username', 'first_name', 'last_name', 'matricula', 'data_nascimento', 'contato_responsavel', 'turma']
+_CAMPOS_ALUNO = ['username', 'first_name', 'last_name', 'email', 'matricula', 'data_nascimento', 'contato_responsavel', 'turma']
 
 _WIDGETS_ALUNO = {
     'username': forms.TextInput(attrs={'class': 'form-control'}),
     'first_name': forms.TextInput(attrs={'class': 'form-control'}),
     'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+    'email': forms.EmailInput(attrs={'class': 'form-control'}),
     'matricula': forms.TextInput(attrs={'class': 'form-control'}),
     'data_nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
     'contato_responsavel': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(00) 00000-0000'}),
@@ -18,6 +19,7 @@ _LABELS_ALUNO = {
     'username': 'Usuário (login)',
     'first_name': 'Nome',
     'last_name': 'Sobrenome',
+    'email': 'E-mail (recebe os avisos da escola)',
 }
 
 

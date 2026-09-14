@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'contas',
     'biblioteca',
     'diario',
+    'avisos',
+    'calendario',
 ]
 
 AUTH_USER_MODEL = 'contas.Usuario'
@@ -152,9 +154,24 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+#
+# Por padrão os e-mails só aparecem no terminal (backend "console"), nada é
+# enviado de verdade — bom pra desenvolver sem precisar de conta de e-mail.
+# Pra enviar de verdade (ex: avisos por e-mail pros alunos), defina as
+# variáveis de ambiente abaixo antes de rodar o servidor. Com Gmail, use uma
+# "senha de app" (não a senha normal da conta): myaccount.google.com/apppasswords
+#
+#   export DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+#   export DJANGO_EMAIL_HOST_USER=seuemail@gmail.com
+#   export DJANGO_EMAIL_HOST_PASSWORD=xxxxxxxxxxxxxxxx
+EMAIL_BACKEND = os.environ.get(
+    'DJANGO_EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend'
+)
+EMAIL_HOST = os.environ.get('DJANGO_EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('DJANGO_EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('DJANGO_EMAIL_USE_TLS', 'True').lower() != 'false'
+EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DJANGO_DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'nao-responda@escola.local'
+)

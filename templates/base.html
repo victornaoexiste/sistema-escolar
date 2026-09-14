@@ -3,81 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block titulo %}Sistema Escolar{% endblock %}</title>
+    <title>{% block titulo %}Vereda{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        /*
+         * Identidade: instituto técnico, não "escolinha azul-e-branco".
+         * Papel + tinta + uma cor de placa de circuito como acento — sóbrio,
+         * sem gradiente nem sombra decorativa; números tabulares em mono
+         * (matrícula, horário, frequência) porque são dado, não rótulo.
+         */
         :root{
-            --bs-body-font-family:'Inter',system-ui,-apple-system,sans-serif;
-            --bs-primary:#F97316;
-            --bs-primary-rgb:249,115,22;
-            --bs-primary-text-emphasis:#9A3412;
-            --bs-primary-bg-subtle:#FFEDD5;
-            --bs-primary-border-subtle:#FDBA74;
-            --bs-link-color:#EA580C;
-            --bs-link-color-rgb:234,88,12;
-            --bs-link-hover-color:#9A3412;
-            --bs-link-hover-color-rgb:154,52,18;
-            --brand-900:#312E81;
-            --brand-700:#4338CA;
-            --brand-100:#E0E7FF;
+            --paper:#EEEBDE;
+            --surface:#FAF8F1;
+            --ink:#221F1A;
+            --ink-soft:#6B6558;
+            --line:#DAD2BC;
+            --accent:#1F6F4A;
+            --accent-dark:#154F35;
+            --accent-soft:#DCEAE1;
+            --signal:#B8791A;
+            --signal-soft:#F3E3C4;
+            --danger:#A3402F;
+            --danger-soft:#F1DCD3;
+
+            --bs-body-font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+            --bs-body-bg:var(--paper);
+            --bs-body-color:var(--ink);
+            --bs-border-color:var(--line);
+
+            --bs-primary:var(--accent);
+            --bs-primary-rgb:31,111,74;
+            --bs-primary-text-emphasis:var(--accent-dark);
+            --bs-primary-bg-subtle:var(--accent-soft);
+            --bs-primary-border-subtle:#B7D6C4;
+            --bs-link-color:var(--accent);
+            --bs-link-color-rgb:31,111,74;
+            --bs-link-hover-color:var(--accent-dark);
+            --bs-link-hover-color-rgb:21,79,53;
+
+            --bs-secondary:var(--ink-soft);
+            --bs-secondary-rgb:107,101,88;
+            --bs-secondary-bg-subtle:#E7E2D2;
+            --bs-secondary-border-subtle:var(--line);
+            --bs-secondary-text-emphasis:var(--ink);
+
+            --bs-success:#2E7D4F;
+            --bs-success-rgb:46,125,79;
+            --bs-success-bg-subtle:var(--accent-soft);
+            --bs-success-border-subtle:#B7D6C4;
+            --bs-success-text-emphasis:var(--accent-dark);
+
+            --bs-warning:var(--signal);
+            --bs-warning-rgb:184,121,26;
+            --bs-warning-bg-subtle:var(--signal-soft);
+            --bs-warning-border-subtle:#E3C48C;
+            --bs-warning-text-emphasis:#7A5112;
+
+            --bs-danger:var(--danger);
+            --bs-danger-rgb:163,64,47;
+            --bs-danger-bg-subtle:var(--danger-soft);
+            --bs-danger-border-subtle:#E0B7AB;
+            --bs-danger-text-emphasis:#7A2E1F;
+
+            --bs-info:#3E6B84;
+            --bs-info-rgb:62,107,132;
+            --bs-info-bg-subtle:#DCE6EB;
+            --bs-info-border-subtle:#AEC4CF;
+            --bs-info-text-emphasis:#2A4A5C;
+
+            --bs-light:var(--surface);
+            --bs-dark:var(--ink);
         }
 
-        body{ background:#F7F6F2; }
-        h1,h2,h3,h4,h5,h6,.navbar-brand,.btn,.brand-font{
-            font-family:'Poppins',system-ui,sans-serif;
-            letter-spacing:-.01em;
+        body{ background:var(--paper); color:var(--ink); }
+        h1,h2,h3,h4,h5,h6,.navbar-brand,.brand-font{
+            font-family:'IBM Plex Sans',system-ui,sans-serif;
+            font-weight:600; letter-spacing:-.01em; color:var(--ink);
         }
+        .font-mono{ font-family:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace; font-variant-numeric:tabular-nums; }
 
-        /* ---- navbar ---- */
-        .navbar-brand-bar{
-            background:linear-gradient(135deg, var(--brand-900), var(--brand-700));
-            box-shadow:0 2px 10px rgba(49,46,129,.25);
+        /* ---- navbar: barra sólida de tinta, sem gradiente ---- */
+        .navbar-brand-bar{ background:var(--ink); border-bottom:3px solid var(--accent); box-shadow:none; }
+        .navbar-brand-bar .navbar-brand{
+            font-weight:700; font-size:1.1rem; display:inline-flex; align-items:center; gap:.5rem;
         }
-        .navbar-brand-bar .navbar-brand{font-weight:800; font-size:1.15rem;}
+        .navbar-brand-bar .navbar-brand i{ color:var(--accent); }
         .navbar-brand-bar .nav-link{
-            font-weight:500; color:rgba(255,255,255,.82) !important;
-            border-radius:.5rem; padding:.5rem .85rem !important; margin:0 .1rem;
+            font-weight:500; color:rgba(250,248,241,.72) !important;
+            border-radius:0; padding:.55rem .8rem !important; margin:0 .05rem;
+            border-bottom:2px solid transparent;
         }
-        .navbar-brand-bar .nav-link:hover{color:#fff !important; background:rgba(255,255,255,.08);}
-        .navbar-brand-bar .nav-link.active{color:#fff !important; background:rgba(255,255,255,.16); font-weight:600;}
-        .navbar-brand-bar .badge{font-weight:600;}
+        .navbar-brand-bar .nav-link:hover{ color:#FAF8F1 !important; border-bottom-color:rgba(250,248,241,.35); }
+        .navbar-brand-bar .nav-link.active{ color:#FAF8F1 !important; font-weight:600; border-bottom-color:var(--accent); }
+        .navbar-brand-bar .badge{ font-weight:600; }
 
-        /* ---- buttons: maiores, com peso e leve elevação no hover ---- */
+        /* ---- menu mobile: painel lateral deslizante, não dropdown espremido ---- */
+        .offcanvas{ background:var(--ink); }
+        .offcanvas-title{ color:#FAF8F1; font-weight:700; }
+        @media (max-width: 991.98px){
+            .navbar-brand-bar .nav-link{
+                border-bottom:none; border-left:3px solid transparent;
+                padding:.7rem .9rem !important; border-radius:0;
+            }
+            .navbar-brand-bar .nav-link:hover{ border-left-color:rgba(250,248,241,.35); background:rgba(250,248,241,.06); }
+            .navbar-brand-bar .nav-link.active{ border-left-color:var(--accent); background:rgba(250,248,241,.08); }
+            .navbar-user-block{
+                margin-top:1.25rem; padding-top:1rem; border-top:1px solid rgba(250,248,241,.15);
+                display:flex; flex-direction:column; align-items:flex-start; gap:.6rem;
+            }
+            .navbar-user-block .navbar-text{ margin:0 !important; }
+            .navbar-user-block form, .navbar-user-block .btn{ width:100%; }
+        }
+
+        /* ---- botões: preenchimento chapado, sem sombra nem elevação ---- */
         .btn{
-            font-weight:600; border-radius:.65rem; padding:.55rem 1.15rem;
-            transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+            font-weight:600; border-radius:.4rem; padding:.5rem 1.05rem;
+            transition:background-color .12s ease, border-color .12s ease, color .12s ease;
         }
-        .btn-sm{padding:.4rem .85rem; border-radius:.5rem;}
-        .btn-primary{border:none; box-shadow:0 3px 10px rgba(249,115,22,.35);}
-        .btn-primary:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(249,115,22,.45);}
-        .btn-primary:active{transform:translateY(0);}
-        .btn-outline-primary{border-width:2px;}
-        .btn-lg{padding:.75rem 1.5rem; font-size:1.05rem; border-radius:.8rem;}
+        .btn-sm{ padding:.35rem .75rem; border-radius:.35rem; }
+        .btn-lg{ padding:.7rem 1.4rem; font-size:1.02rem; border-radius:.45rem; }
+        .btn-primary{ background-color:var(--accent) !important; border-color:var(--accent-dark) !important; color:#fff !important; }
+        .btn-primary:hover{ background-color:var(--accent-dark) !important; border-color:var(--accent-dark) !important; }
+        .btn-outline-primary{ color:var(--accent) !important; border-color:var(--accent) !important; border-width:1.5px; }
+        .btn-outline-primary:hover{ background-color:var(--accent) !important; border-color:var(--accent) !important; color:#fff !important; }
+        .btn-outline-secondary{ color:var(--ink-soft) !important; border-color:var(--line) !important; }
+        .btn-outline-secondary:hover{ background-color:var(--ink-soft) !important; border-color:var(--ink-soft) !important; color:#fff !important; }
+        .btn-outline-danger{ color:var(--danger) !important; border-color:var(--danger) !important; }
+        .btn-outline-danger:hover{ background-color:var(--danger) !important; border-color:var(--danger) !important; color:#fff !important; }
+        .btn-outline-light{ color:#FAF8F1 !important; border-color:rgba(250,248,241,.5) !important; }
+        .btn-outline-light:hover{ background-color:rgba(250,248,241,.12) !important; border-color:#FAF8F1 !important; color:#FAF8F1 !important; }
 
-        /* ---- cards ---- */
-        .card{border:1px solid rgba(49,46,129,.08); border-radius:1rem; box-shadow:0 1px 3px rgba(20,20,30,.05);}
-        a.card, .card.card-link{text-decoration:none; color:inherit; transition:transform .15s ease, box-shadow .15s ease;}
-        .card-hover:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(49,46,129,.12);}
+        /* ---- Bootstrap Jr recompila cores em hex fixo em vários componentes;
+           essas classes utilitárias/semânticas são sobrescritas direto pra valer
+           em todo canto que o app usa (progress bar, badge, alerta, borda de card). ---- */
+        .bg-success{ background-color:var(--accent) !important; }
+        .bg-warning{ background-color:var(--signal) !important; }
+        .bg-danger{ background-color:var(--danger) !important; }
+        .bg-light{ background-color:var(--surface) !important; }
+        .border-primary{ border-color:var(--accent) !important; }
+        .border-secondary{ border-color:var(--ink-soft) !important; }
+        .border-warning{ border-color:var(--signal) !important; }
+        .border-danger{ border-color:var(--danger) !important; }
+        .border-info{ border-color:#3E6B84 !important; }
+        .text-bg-primary{ background-color:var(--accent) !important; color:#fff !important; }
+        .text-bg-secondary{ background-color:var(--ink-soft) !important; color:#fff !important; }
+        .text-bg-warning{ background-color:var(--signal) !important; color:#fff !important; }
+        .text-bg-danger{ background-color:var(--danger) !important; color:#fff !important; }
+        .text-bg-info{ background-color:#3E6B84 !important; color:#fff !important; }
+        .alert-danger{ background-color:var(--danger-soft) !important; color:#6B2A1D !important; }
+        .alert-warning{ background-color:var(--signal-soft) !important; color:#6B4712 !important; }
+        .table-danger, .table-danger > *{ --bs-table-bg:var(--danger-soft) !important; --bs-table-color:var(--ink) !important; }
 
-        /* ---- badge de ícone nos cards de painel ---- */
+        /* ---- cards: ficha de papel, borda fina, sem sombra ---- */
+        .card{ background:var(--surface); border:1px solid var(--line); border-radius:.5rem; box-shadow:none; }
+        .shadow-sm, .shadow, .shadow-lg{ box-shadow:none !important; }
+        a.card, .card.card-link{ text-decoration:none; color:inherit; transition:border-color .15s ease, transform .15s ease; }
+        .card-hover:hover{ border-color:var(--accent); transform:translateY(-2px); }
+        .list-group-item{ background:transparent; border-color:var(--line); }
+
+        /* ---- marca de ícone nos cards: tons do próprio acento, sem confete pastel ---- */
         .icon-badge{
-            width:52px; height:52px; border-radius:14px;
+            width:44px; height:44px; border-radius:.5rem;
             display:inline-flex; align-items:center; justify-content:center;
-            font-size:1.4rem; margin-bottom:.6rem;
+            font-size:1.15rem; margin-bottom:.6rem; border:1.5px solid transparent;
         }
-        .icon-badge.bg-1{background:#FFEDD5; color:#C2410C;}
-        .icon-badge.bg-2{background:#E0E7FF; color:#3730A3;}
-        .icon-badge.bg-3{background:#DCFCE7; color:#15803D;}
-        .icon-badge.bg-4{background:#FCE7F3; color:#BE185D;}
+        .icon-badge.bg-1{ background:var(--accent-soft); color:var(--accent-dark); }
+        .icon-badge.bg-2{ background:transparent; color:var(--ink); border-color:var(--line); }
+        .icon-badge.bg-3{ background:var(--signal-soft); color:#7A5112; }
+        .icon-badge.bg-4{ background:var(--danger-soft); color:#7A2E1F; }
 
-        .alert{border-radius:.85rem; border:none;}
-        .form-control, .form-select{border-radius:.6rem; padding:.6rem .85rem; border-color:#DDD8CC;}
-        .form-control:focus, .form-select:focus{border-color:var(--bs-primary); box-shadow:0 0 0 .2rem rgba(249,115,22,.15);}
-        .table{--bs-table-hover-bg:#FFF7ED;}
+        .alert{ border-radius:.5rem; border:1px solid rgba(34,31,26,.12); }
+        .badge{ font-weight:600; border-radius:.35rem; }
+        .dropdown-menu{ border-color:var(--line); border-radius:.5rem; }
+        .dropdown-item:hover, .dropdown-item:focus{ background-color:var(--accent-soft); color:var(--accent-dark); }
+        .form-control, .form-select{ border-radius:.4rem; padding:.55rem .8rem; border-color:var(--line); background-color:var(--surface); color:var(--ink); }
+        .form-control:focus, .form-select:focus{ border-color:var(--accent); box-shadow:0 0 0 .2rem var(--accent-soft); background-color:var(--surface); color:var(--ink); }
+        .table{ --bs-table-hover-bg:var(--accent-soft); }
+
+        a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+            outline:2px solid var(--accent); outline-offset:2px;
+        }
+        @media (prefers-reduced-motion: reduce){
+            *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }
+        }
     </style>
 </head>
 <body>
@@ -86,12 +198,17 @@
 <nav class="navbar navbar-expand-lg navbar-dark navbar-brand-bar">
     <div class="container">
         <a class="navbar-brand" href="{% url 'contas:painel' %}">
-            <i class="bi bi-mortarboard-fill"></i> Sistema Escolar
+            <i class="bi bi-rulers"></i> Vereda
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Abrir menu">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="offcanvas offcanvas-lg offcanvas-start" tabindex="-1" id="navbarNav" aria-labelledby="navbarNavLabel">
+            <div class="offcanvas-header d-lg-none">
+                <span class="offcanvas-title" id="navbarNavLabel"><i class="bi bi-rulers"></i> Vereda</span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+            </div>
+            <div class="offcanvas-body">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link {% if request.path == '/contas/painel/' %}active{% endif %}" href="{% url 'contas:painel' %}">
@@ -104,10 +221,32 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if '/diario/' in request.path %}active{% endif %}" href="{% url 'diario:turmas' %}">
+                    <a class="nav-link {% if '/diario/' in request.path and 'horarios' not in request.path %}active{% endif %}" href="{% url 'diario:turmas' %}">
                         <i class="bi bi-journal-text"></i> Diário Escolar
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'horarios' in request.path %}active{% endif %}" href="{% url 'diario:horarios' %}">
+                        <i class="bi bi-calendar-week"></i> Horários
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/avisos/' in request.path %}active{% endif %}" href="{% url 'avisos:lista' %}">
+                        <i class="bi bi-megaphone-fill"></i> Avisos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/calendario/' in request.path %}active{% endif %}" href="{% url 'calendario:lista' %}">
+                        <i class="bi bi-calendar3"></i> Calendário
+                    </a>
+                </li>
+                {% if user.is_aluno %}
+                <li class="nav-item">
+                    <a class="nav-link {% if '/contas/documentos/' in request.path %}active{% endif %}" href="{% url 'contas:documentos' %}">
+                        <i class="bi bi-file-earmark-text-fill"></i> Documentos
+                    </a>
+                </li>
+                {% endif %}
                 {% if user.is_admin or user.is_secretaria %}
                 <li class="nav-item">
                     <a class="nav-link {% if '/contas/alunos' in request.path %}active{% endif %}" href="{% url 'contas:alunos_lista' %}">
@@ -123,14 +262,17 @@
                 </li>
                 {% endif %}
             </ul>
-            <span class="navbar-text text-light me-3">
-                {{ user.get_full_name|default:user.username }}
-                <span class="badge bg-light text-dark">{{ user.get_tipo_display }}</span>
-            </span>
-            <form action="{% url 'contas:logout' %}" method="post" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Sair</button>
-            </form>
+            <div class="navbar-user-block">
+                <span class="navbar-text text-light me-3">
+                    {{ user.get_full_name|default:user.username }}
+                    <span class="badge bg-light text-dark">{{ user.get_tipo_display }}</span>
+                </span>
+                <form action="{% url 'contas:logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Sair</button>
+                </form>
+            </div>
+            </div>
         </div>
     </div>
 </nav>

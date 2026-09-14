@@ -2,11 +2,14 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
 
 from contas.decorators import somente
 
-from .forms import AulaForm, PresencaRapidaForm
-from .models import Aula, Presenca, Turma
+from .forms import AulaForm, HorarioAulaForm, PresencaRapidaForm
+from .frequencia import frequencia_por_disciplina, frequencia_turma_por_aluno
+from .models import Aula, HorarioAula, Presenca, Turma
 
 Usuario = get_user_model()
 
@@ -34,14 +37,14 @@ def turma_diario(request, pk):
         return redirect('contas:painel')
 
     aulas = turma.aulas.select_related('disciplina', 'professor')
-    minhas_faltas = None
+    minha_frequencia = None
     if usuario.is_aluno:
-        minhas_faltas = Presenca.objects.filter(aluno=usuario, aula__turma=turma, presente=False).count()
+        minha_frequencia = frequencia_por_disciplina(turma, usuario)
 
     return render(
         request,
         'diario/turma_diario.html',
-        {'turma': turma, 'aulas': aulas, 'minhas_faltas': minhas_faltas},
+        {'turma': turma, 'aulas': aulas, 'minha_frequencia': minha_frequencia},
     )
 
 
@@ -95,3 +98,73 @@ def presenca(request, pk):
         for aluno in alunos
     ]
     return render(request, 'diario/presenca.html', {'aula': aula, 'linhas': linhas})
+
+
+@login_required
+def horarios(request):
+    usuario = request.user
+    turmas_disponiveis = None
+
+    if usuario.is_aluno:
+        if not usuario.turma:
+            messages.info(request, 'Você ainda não está matriculado em nenhuma turma.')
+            return redirect('contas:painel')
+        turma = usuario.turma
+    else:
+        turmas_disponiveis = Turma.objects.all()
+        turma_id = request.GET.get('turma') or (turmas_disponiveis.first().pk if turmas_disponiveis else None)
+        turma = get_object_or_404(Turma, pk=turma_id) if turma_id else None
+
+    if not turma:
+        return render(request, 'diario/horarios.html', {'turma': None, 'turmas_disponiveis': turmas_disponiveis})
+
+    todos_horarios = turma.horarios.select_related('disciplina', 'professor')
+    hoje = timezone.localdate()
+    horarios_hoje = todos_horarios.filter(dia_semana=hoje.weekday())
+
+    grade_por_dia = {dia: [] for dia, _ in HorarioAula.DiaSemana.choices}
+    for horario in todos_horarios:
+        grade_por_dia[horario.dia_semana].append(horario)
+    grade = [(rotulo, grade_por_dia[dia]) for dia, rotulo in HorarioAula.DiaSemana.choices]
+
+    return render(
+        request,
+        'diario/horarios.html',
+        {
+            'turma': turma,
+            'turmas_disponiveis': turmas_disponiveis,
+            'horarios_hoje': horarios_hoje,
+            'grade': grade,
+        },
+    )
+
+
+@somente('admin', 'secretaria', 'professor')
+def frequencia_turma(request, pk):
+    turma = get_object_or_404(Turma, pk=pk)
+    linhas = frequencia_turma_por_aluno(turma)
+    return render(request, 'diario/frequencia_turma.html', {'turma': turma, 'linhas': linhas})
+
+
+@somente('admin', 'secretaria')
+def horario_novo(request):
+    if request.method == 'POST':
+        form = HorarioAulaForm(request.POST)
+        if form.is_valid():
+            horario = form.save()
+            messages.success(request, 'Horário cadastrado com sucesso.')
+            return redirect(f"{reverse('diario:horarios')}?turma={horario.turma_id}")
+    else:
+        form = HorarioAulaForm()
+    return render(request, 'diario/horario_form.html', {'form': form, 'titulo': 'Novo horário de aula'})
+
+
+@somente('admin', 'secretaria')
+def horario_excluir(request, pk):
+    horario = get_object_or_404(HorarioAula, pk=pk)
+    turma_id = horario.turma_id
+    if request.method == 'POST':
+        horario.delete()
+        messages.success(request, 'Horário removido.')
+        return redirect(f"{reverse('diario:horarios')}?turma={turma_id}")
+    return render(request, 'diario/horario_confirmar_exclusao.html', {'horario': horario})

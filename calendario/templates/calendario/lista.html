@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block titulo %}Calendário Acadêmico{% endblock %}
+{% block conteudo %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h1 class="h3 mb-0"><i class="bi bi-calendar3"></i> Calendário Acadêmico</h1>
+    {% if user.is_admin or user.is_secretaria %}
+    <a href="{% url 'calendario:novo' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Novo evento</a>
+    {% endif %}
+</div>
+
+<div class="mb-4">
+    {% if mostrar_passados %}
+    <a href="{% url 'calendario:lista' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-calendar3"></i> Ver próximos eventos</a>
+    {% else %}
+    <a href="{% url 'calendario:lista' %}?passados=1" class="btn btn-outline-secondary btn-sm"><i class="bi bi-clock-history"></i> Ver eventos passados</a>
+    {% endif %}
+</div>
+
+{% if grupos %}
+{% for grupo in grupos %}
+<h2 class="h6 text-muted mb-3 mt-4">{{ grupo.rotulo }}</h2>
+<div class="vstack gap-2 mb-2">
+    {% for evento in grupo.eventos %}
+    <div class="card shadow-sm border-start border-4 {% if evento.tipo == 'feriado' %}border-danger{% elif evento.tipo == 'recesso' %}border-secondary{% elif evento.tipo == 'prova' %}border-warning{% elif evento.tipo == 'matricula' %}border-info{% else %}border-primary{% endif %}">
+        <div class="card-body py-3 d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge {% if evento.tipo == 'feriado' %}text-bg-danger{% elif evento.tipo == 'recesso' %}text-bg-secondary{% elif evento.tipo == 'prova' %}text-bg-warning{% elif evento.tipo == 'matricula' %}text-bg-info{% else %}text-bg-primary{% endif %}">{{ evento.get_tipo_display }}</span>
+                    <strong>{{ evento.titulo }}</strong>
+                    {% if evento.turma %}<span class="text-muted small">· {{ evento.turma }}</span>{% endif %}
+                </div>
+                {% if evento.descricao %}<p class="text-muted small mb-0">{{ evento.descricao }}</p>{% endif %}
+            </div>
+            <div class="text-end">
+                <div class="fw-semibold">
+                    {{ evento.data_inicio|date:'d/m/Y' }}{% if evento.data_fim and evento.data_fim != evento.data_inicio %} – {{ evento.data_fim|date:'d/m/Y' }}{% endif %}
+                </div>
+                {% if user.is_admin or user.is_secretaria %}
+                <a href="{% url 'calendario:excluir' evento.pk %}" class="text-danger small"><i class="bi bi-trash"></i> excluir</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+{% else %}
+<p class="text-muted">{% if mostrar_passados %}Nenhum evento passado registrado.{% else %}Nenhum evento futuro no calendário ainda.{% endif %}</p>
+{% endif %}
+{% endblock %}

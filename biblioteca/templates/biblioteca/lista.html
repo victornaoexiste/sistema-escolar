@@ -35,7 +35,7 @@
                 {% if livro.categoria %}<span class="badge bg-primary-subtle text-primary-emphasis mb-2 align-self-start">{{ livro.categoria }}</span>{% endif %}
                 <h2 class="h6 mb-1">{{ livro.titulo }}</h2>
                 <p class="text-muted small mb-3">{{ livro.autor }}</p>
-                <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="btn btn-primary btn-sm mt-auto">Ler ou baixar <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="btn btn-primary btn-sm mt-auto">Ler ou baixar</a>
             </div>
         </div>
     </div>

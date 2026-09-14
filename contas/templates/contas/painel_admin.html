@@ -4,6 +4,18 @@
 <h1 class="h3 mb-1">Painel do Administrador</h1>
 <p class="text-muted mb-4">Visão geral do sistema — acesso completo.</p>
 
+{% if turmas_em_risco %}
+<div class="alert alert-warning d-flex align-items-start gap-2 mb-4">
+    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+    <div>
+        <strong>Atenção à frequência:</strong>
+        {% for grupo in turmas_em_risco %}
+        <a href="{% url 'diario:frequencia_turma' grupo.turma.pk %}" class="alert-link">{{ grupo.turma }}</a> ({{ grupo.alunos|length }} aluno(s) abaixo de 75%){% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 <div class="row g-3">
     <div class="col-md-3">
         <div class="card card-hover h-100 shadow-sm">
@@ -11,7 +23,7 @@
                 <div class="icon-badge bg-2"><i class="bi bi-person-plus"></i></div>
                 <h2 class="h5">Alunos</h2>
                 <p class="text-muted">Cadastre alunos com matrícula, turma e contato do responsável.</p>
-                <a href="{% url 'contas:alunos_lista' %}" class="btn btn-primary btn-sm">Ver alunos <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'contas:alunos_lista' %}" class="btn btn-primary btn-sm">Ver alunos</a>
             </div>
         </div>
     </div>
@@ -21,7 +33,7 @@
                 <div class="icon-badge bg-4"><i class="bi bi-gear-fill"></i></div>
                 <h2 class="h5">Administração</h2>
                 <p class="text-muted">Cadastre professores, secretaria, cursos, turmas e disciplinas.</p>
-                <a href="/admin/" class="btn btn-primary btn-sm">Abrir administração <i class="bi bi-arrow-right"></i></a>
+                <a href="/admin/" class="btn btn-primary btn-sm">Abrir administração</a>
             </div>
         </div>
     </div>
@@ -31,7 +43,7 @@
                 <div class="icon-badge bg-1"><i class="bi bi-book-half"></i></div>
                 <h2 class="h5">Biblioteca Virtual</h2>
                 <p class="text-muted">Envie e gerencie os livros disponíveis para leitura e download.</p>
-                <a href="{% url 'biblioteca:lista' %}" class="btn btn-primary btn-sm">Abrir biblioteca <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'biblioteca:lista' %}" class="btn btn-primary btn-sm">Abrir biblioteca</a>
             </div>
         </div>
     </div>
@@ -41,7 +53,21 @@
                 <div class="icon-badge bg-3"><i class="bi bi-journal-text"></i></div>
                 <h2 class="h5">Diário Escolar</h2>
                 <p class="text-muted">Acompanhe as aulas e a frequência de todas as turmas.</p>
-                <a href="{% url 'diario:turmas' %}" class="btn btn-primary btn-sm">Abrir diário <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'diario:turmas' %}" class="btn btn-primary btn-sm">Abrir diário</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-hover h-100 shadow-sm">
+            <div class="card-body">
+                <div class="icon-badge bg-2"><i class="bi bi-calendar3"></i></div>
+                <h2 class="h5">Calendário Acadêmico</h2>
+                {% if proximos_eventos %}
+                <p class="text-muted small mb-2">Próximo: <strong>{{ proximos_eventos.0.titulo }}</strong> em {{ proximos_eventos.0.data_inicio|date:'d/m' }}</p>
+                {% else %}
+                <p class="text-muted">Cadastre feriados, provas e datas importantes.</p>
+                {% endif %}
+                <a href="{% url 'calendario:lista' %}" class="btn btn-primary btn-sm">Abrir calendário</a>
             </div>
         </div>
     </div>

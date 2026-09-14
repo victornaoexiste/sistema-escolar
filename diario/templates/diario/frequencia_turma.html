@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block titulo %}Frequência — {{ turma }}{% endblock %}
+{% block conteudo %}
+<a href="{% url 'diario:turma' turma.pk %}" class="btn btn-link ps-0"><i class="bi bi-arrow-left"></i> Voltar ao diário</a>
+
+<h1 class="h3 mb-1"><i class="bi bi-bar-chart-fill"></i> Frequência geral — {{ turma }}</h1>
+<p class="text-muted mb-4">Percentual de presença de cada aluno somando todas as disciplinas. Mínimo exigido: <strong>75%</strong>.</p>
+
+{% if linhas %}
+<div class="table-responsive">
+    <table class="table table-hover align-middle bg-white">
+        <thead>
+            <tr>
+                <th>Aluno</th>
+                <th>Presenças</th>
+                <th>Frequência</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for linha in linhas %}
+            <tr class="{% if linha.em_risco %}table-danger{% endif %}">
+                <td>
+                    {{ linha.aluno.get_full_name|default:linha.aluno.username }}
+                    {% if linha.em_risco %}<i class="bi bi-exclamation-triangle-fill text-danger ms-1" title="Abaixo do mínimo"></i>{% endif %}
+                </td>
+                <td class="text-muted font-mono">{{ linha.presentes }}/{{ linha.total }}</td>
+                <td style="min-width: 220px;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="progress flex-grow-1" style="height: 10px;">
+                            <div class="progress-bar {% if linha.percentual < 60 %}bg-danger{% elif linha.percentual < 75 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ linha.percentual|stringformat:'s' }}%;"></div>
+                        </div>
+                        <span class="small text-muted font-mono" style="width: 3.5rem;">{{ linha.percentual }}%</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-muted">Nenhum aluno matriculado nesta turma ainda.</p>
+{% endif %}
+{% endblock %}

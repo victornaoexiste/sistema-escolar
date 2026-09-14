@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Aula, Curso, Disciplina, Presenca, Turma
+from .models import Aula, Curso, Disciplina, HorarioAula, Presenca, Turma
 
 
 @admin.register(Curso)
@@ -29,6 +29,12 @@ class AulaAdmin(admin.ModelAdmin):
     list_display = ('turma', 'disciplina', 'professor', 'data')
     list_filter = ('turma', 'disciplina')
     inlines = [PresencaInline]
+
+
+@admin.register(HorarioAula)
+class HorarioAulaAdmin(admin.ModelAdmin):
+    list_display = ('turma', 'disciplina', 'professor', 'dia_semana', 'hora_inicio', 'hora_fim', 'sala')
+    list_filter = ('turma', 'dia_semana')
 
 
 @admin.register(Presenca)

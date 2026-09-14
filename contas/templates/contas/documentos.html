@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block titulo %}Meus Documentos{% endblock %}
+{% block conteudo %}
+<h1 class="h3 mb-1"><i class="bi bi-file-earmark-text-fill"></i> Meus Documentos</h1>
+<p class="text-muted mb-4">Gere e baixe seus documentos em PDF a qualquer momento, sem precisar ir até a secretaria.</p>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="icon-badge bg-1"><i class="bi bi-file-earmark-check-fill"></i></div>
+                <h2 class="h5">Declaração de Matrícula</h2>
+                <p class="text-muted">Comprova que você está regularmente matriculado(a) no seu curso técnico. Útil pra estágio, transporte, benefícios etc.</p>
+                <a href="{% url 'contas:documento_declaracao' %}" target="_blank" class="btn btn-primary btn-sm"><i class="bi bi-download"></i> Baixar declaração (PDF)</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="icon-badge bg-2"><i class="bi bi-bar-chart-fill"></i></div>
+                <h2 class="h5">Extrato de Frequência</h2>
+                <p class="text-muted">Mostra sua frequência por disciplina, com o percentual de presença em cada uma.</p>
+                <a href="{% url 'contas:documento_frequencia' %}" target="_blank" class="btn btn-primary btn-sm"><i class="bi bi-download"></i> Baixar extrato (PDF)</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

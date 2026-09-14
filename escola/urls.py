@@ -10,6 +10,8 @@ urlpatterns = [
     path('contas/', include('contas.urls')),
     path('biblioteca/', include('biblioteca.urls')),
     path('diario/', include('diario.urls')),
+    path('avisos/', include('avisos.urls')),
+    path('calendario/', include('calendario.urls')),
 ]
 
 # Projeto pequeno/demo: mídia (capas e PDFs) sempre servida pelo Django,

@@ -71,6 +71,39 @@ class Aula(models.Model):
         return f'{self.turma} · {self.disciplina} · {self.data}'
 
 
+class HorarioAula(models.Model):
+    class DiaSemana(models.IntegerChoices):
+        SEGUNDA = 0, 'Segunda-feira'
+        TERCA = 1, 'Terça-feira'
+        QUARTA = 2, 'Quarta-feira'
+        QUINTA = 3, 'Quinta-feira'
+        SEXTA = 4, 'Sexta-feira'
+        SABADO = 5, 'Sábado'
+
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='horarios')
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name='horarios')
+    professor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='horarios_lecionados',
+        limit_choices_to={'tipo': 'professor'},
+    )
+    dia_semana = models.PositiveSmallIntegerField('Dia da semana', choices=DiaSemana.choices)
+    hora_inicio = models.TimeField('Início')
+    hora_fim = models.TimeField('Fim')
+    sala = models.CharField('Sala', max_length=30, blank=True)
+
+    class Meta:
+        ordering = ['dia_semana', 'hora_inicio']
+        verbose_name = 'Horário de aula'
+        verbose_name_plural = 'Horários de aula'
+
+    def __str__(self):
+        return f'{self.turma} · {self.disciplina} · {self.get_dia_semana_display()} {self.hora_inicio:%H:%M}'
+
+
 class Presenca(models.Model):
     aula = models.ForeignKey(Aula, on_delete=models.CASCADE, related_name='presencas')
     aluno = models.ForeignKey(

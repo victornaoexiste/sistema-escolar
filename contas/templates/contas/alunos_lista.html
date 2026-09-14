@@ -29,10 +29,23 @@
             {% for aluno in alunos %}
             <tr>
                 <td>{{ aluno.get_full_name|default:"—" }}</td>
-                <td>{{ aluno.matricula|default:"—" }}</td>
+                <td class="font-mono">{{ aluno.matricula|default:"—" }}</td>
                 <td>{{ aluno.turma|default:"—" }}</td>
                 <td>{{ aluno.username }}</td>
-                <td><a href="{% url 'contas:aluno_editar' aluno.pk %}" class="btn btn-outline-secondary btn-sm">Editar</a></td>
+                <td class="text-end">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'contas:aluno_editar' aluno.pk %}"><i class="bi bi-pencil-fill"></i> Editar</a></li>
+                            {% if aluno.turma %}
+                            <li><a class="dropdown-item" href="{% url 'contas:documento_declaracao_aluno' aluno.pk %}" target="_blank"><i class="bi bi-file-earmark-check-fill"></i> Declaração de matrícula</a></li>
+                            <li><a class="dropdown-item" href="{% url 'contas:documento_frequencia_aluno' aluno.pk %}" target="_blank"><i class="bi bi-bar-chart-fill"></i> Extrato de frequência</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

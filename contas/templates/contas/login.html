@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 {% block titulo %}Entrar — Sistema Escolar{% endblock %}
 {% block conteudo %}
+<style>
+    body{ background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 45%, #F7F6F2 45%); }
+</style>
 <div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm mt-5">
-            <div class="card-body p-4">
-                <h1 class="h4 text-center mb-4"><i class="bi bi-mortarboard-fill"></i> Sistema Escolar</h1>
+    <div class="col-11 col-sm-8 col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 mt-5">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="icon-badge bg-2 mx-auto"><i class="bi bi-mortarboard-fill"></i></div>
+                    <h1 class="h4 mb-1">Sistema Escolar</h1>
+                    <p class="text-muted small mb-0">Entre com seu usuário e senha</p>
+                </div>
 
                 {% if form.errors %}
-                    <div class="alert alert-danger">Usuário ou senha inválidos.</div>
+                    <div class="alert alert-danger py-2"><i class="bi bi-exclamation-triangle-fill"></i> Usuário ou senha inválidos.</div>
                 {% endif %}
 
                 <form method="post">
@@ -17,12 +24,12 @@
                         <label class="form-label" for="{{ form.username.id_for_label }}">Usuário</label>
                         <input type="text" name="username" class="form-control" id="{{ form.username.id_for_label }}" required autofocus>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label class="form-label" for="{{ form.password.id_for_label }}">Senha</label>
                         <input type="password" name="password" class="form-control" id="{{ form.password.id_for_label }}" required>
                     </div>
                     <input type="hidden" name="next" value="{{ next }}">
-                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Entrar <i class="bi bi-arrow-right-circle-fill"></i></button>
                 </form>
             </div>
         </div>

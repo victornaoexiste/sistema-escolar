@@ -6,28 +6,31 @@
 <div class="row g-4">
     <div class="col-md-4">
         {% if livro.capa %}
-        <img src="{{ livro.capa.url }}" class="img-fluid rounded shadow-sm" alt="Capa de {{ livro.titulo }}">
+        <img src="{{ livro.capa.url }}" class="img-fluid rounded-4 shadow-sm" alt="Capa de {{ livro.titulo }}">
         {% else %}
-        <div class="bg-secondary-subtle d-flex align-items-center justify-content-center rounded" style="height:300px;">
-            <i class="bi bi-file-earmark-pdf" style="font-size:4rem;"></i>
+        <div class="d-flex align-items-center justify-content-center rounded-4" style="height:300px;background:linear-gradient(160deg,#FFEDD5,#FFF7ED);">
+            <i class="bi bi-file-earmark-pdf-fill" style="font-size:4rem;color:#F97316;"></i>
         </div>
         {% endif %}
     </div>
     <div class="col-md-8">
+        {% if livro.categoria %}<span class="badge bg-primary-subtle text-primary-emphasis mb-2">{{ livro.categoria }}</span>{% endif %}
         <h1 class="h3">{{ livro.titulo }}</h1>
-        <p class="text-muted">{{ livro.autor }}{% if livro.categoria %} · {{ livro.categoria }}{% endif %}</p>
+        <p class="text-muted">{{ livro.autor }}</p>
         {% if livro.descricao %}<p>{{ livro.descricao }}</p>{% endif %}
-        <p class="text-muted small">Enviado por {{ livro.enviado_por }} em {{ livro.enviado_em|date:'d/m/Y' }}</p>
+        <p class="text-muted small"><i class="bi bi-person-check"></i> Enviado por {{ livro.enviado_por }} em {{ livro.enviado_em|date:'d/m/Y' }}</p>
 
-        <div class="d-flex gap-2 mt-3">
-            <a href="{% url 'biblioteca:baixar' livro.pk %}" class="btn btn-primary"><i class="bi bi-download"></i> Baixar</a>
-            <a href="#leitor" class="btn btn-outline-primary"><i class="bi bi-book"></i> Ler online</a>
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+            <a href="#leitor" class="btn btn-primary btn-lg"><i class="bi bi-book"></i> Ler online</a>
+            <a href="{% url 'biblioteca:baixar' livro.pk %}" class="btn btn-outline-primary btn-lg"><i class="bi bi-download"></i> Baixar</a>
         </div>
     </div>
 </div>
 
-<div class="mt-4" id="leitor">
-    <h2 class="h5">Leitura online</h2>
-    <iframe src="{{ livro.arquivo.url }}" style="width:100%;height:80vh;border:1px solid #dee2e6;border-radius:4px;"></iframe>
+<div class="mt-5" id="leitor">
+    <h2 class="h5 mb-3"><i class="bi bi-file-earmark-text"></i> Leitura online</h2>
+    <div class="card shadow-sm p-2">
+        <iframe src="{{ livro.arquivo.url }}" style="width:100%;height:80vh;border:0;border-radius:.6rem;"></iframe>
+    </div>
 </div>
 {% endblock %}

@@ -1,42 +1,47 @@
 {% extends 'base.html' %}
 {% block titulo %}Painel do Administrador{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-4">Painel do Administrador</h1>
+<h1 class="h3 mb-1">Painel do Administrador</h1>
+<p class="text-muted mb-4">Visão geral do sistema — acesso completo.</p>
 
 <div class="row g-3">
     <div class="col-md-3">
-        <div class="card h-100 shadow-sm">
+        <div class="card card-hover h-100 shadow-sm">
             <div class="card-body">
-                <h2 class="h5"><i class="bi bi-person-plus"></i> Alunos</h2>
+                <div class="icon-badge bg-2"><i class="bi bi-person-plus"></i></div>
+                <h2 class="h5">Alunos</h2>
                 <p class="text-muted">Cadastre alunos com matrícula, turma e contato do responsável.</p>
-                <a href="{% url 'contas:alunos_lista' %}" class="btn btn-primary btn-sm">Ver alunos</a>
+                <a href="{% url 'contas:alunos_lista' %}" class="btn btn-primary btn-sm">Ver alunos <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card h-100 shadow-sm">
+        <div class="card card-hover h-100 shadow-sm">
             <div class="card-body">
-                <h2 class="h5"><i class="bi bi-gear-fill"></i> Administração</h2>
+                <div class="icon-badge bg-4"><i class="bi bi-gear-fill"></i></div>
+                <h2 class="h5">Administração</h2>
                 <p class="text-muted">Cadastre professores, secretaria, cursos, turmas e disciplinas.</p>
-                <a href="/admin/" class="btn btn-primary btn-sm">Abrir administração</a>
+                <a href="/admin/" class="btn btn-primary btn-sm">Abrir administração <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card h-100 shadow-sm">
+        <div class="card card-hover h-100 shadow-sm">
             <div class="card-body">
-                <h2 class="h5"><i class="bi bi-book-half"></i> Biblioteca Virtual</h2>
+                <div class="icon-badge bg-1"><i class="bi bi-book-half"></i></div>
+                <h2 class="h5">Biblioteca Virtual</h2>
                 <p class="text-muted">Envie e gerencie os livros disponíveis para leitura e download.</p>
-                <a href="{% url 'biblioteca:lista' %}" class="btn btn-primary btn-sm">Abrir biblioteca</a>
+                <a href="{% url 'biblioteca:lista' %}" class="btn btn-primary btn-sm">Abrir biblioteca <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card h-100 shadow-sm">
+        <div class="card card-hover h-100 shadow-sm">
             <div class="card-body">
-                <h2 class="h5"><i class="bi bi-journal-text"></i> Diário Escolar</h2>
+                <div class="icon-badge bg-3"><i class="bi bi-journal-text"></i></div>
+                <h2 class="h5">Diário Escolar</h2>
                 <p class="text-muted">Acompanhe as aulas e a frequência de todas as turmas.</p>
-                <a href="{% url 'diario:turmas' %}" class="btn btn-primary btn-sm">Abrir diário</a>
+                <a href="{% url 'diario:turmas' %}" class="btn btn-primary btn-sm">Abrir diário <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>

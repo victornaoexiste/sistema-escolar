@@ -1,42 +1,50 @@
 {% extends 'base.html' %}
 {% block titulo %}Biblioteca Virtual{% endblock %}
 {% block conteudo %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0"><i class="bi bi-book-half"></i> Biblioteca Virtual</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-1"><i class="bi bi-book-half"></i> Biblioteca Virtual</h1>
+        <p class="text-muted mb-0">Leia online ou baixe qualquer livro do acervo.</p>
+    </div>
     {% if user.is_admin or user.is_professor %}
     <a href="{% url 'biblioteca:enviar' %}" class="btn btn-primary"><i class="bi bi-upload"></i> Enviar livro</a>
     {% endif %}
 </div>
 
 <form method="get" class="mb-4">
-    <div class="input-group">
+    <div class="input-group input-group-lg">
+        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
         <input type="text" name="q" class="form-control" placeholder="Buscar por título, autor ou categoria..." value="{{ termo }}">
-        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i> Buscar</button>
+        <button class="btn btn-primary" type="submit">Buscar</button>
     </div>
 </form>
 
 {% if livros %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
     {% for livro in livros %}
     <div class="col">
-        <div class="card h-100 shadow-sm">
+        <div class="card card-hover h-100 shadow-sm overflow-hidden">
             {% if livro.capa %}
             <img src="{{ livro.capa.url }}" class="card-img-top" style="height:220px;object-fit:cover;" alt="Capa de {{ livro.titulo }}">
             {% else %}
-            <div class="bg-secondary-subtle d-flex align-items-center justify-content-center" style="height:220px;">
-                <i class="bi bi-file-earmark-pdf" style="font-size:3rem;"></i>
+            <div class="d-flex align-items-center justify-content-center" style="height:220px;background:linear-gradient(160deg,#FFEDD5,#FFF7ED);">
+                <i class="bi bi-file-earmark-pdf-fill" style="font-size:3.2rem;color:#F97316;"></i>
             </div>
             {% endif %}
             <div class="card-body d-flex flex-column">
+                {% if livro.categoria %}<span class="badge bg-primary-subtle text-primary-emphasis mb-2 align-self-start">{{ livro.categoria }}</span>{% endif %}
                 <h2 class="h6 mb-1">{{ livro.titulo }}</h2>
-                <p class="text-muted small mb-2">{{ livro.autor }}{% if livro.categoria %} · {{ livro.categoria }}{% endif %}</p>
-                <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="btn btn-outline-primary btn-sm mt-auto">Ver livro</a>
+                <p class="text-muted small mb-3">{{ livro.autor }}</p>
+                <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="btn btn-primary btn-sm mt-auto">Ler ou baixar <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 {% else %}
-<p class="text-muted">Nenhum livro encontrado.</p>
+<div class="text-center py-5">
+    <i class="bi bi-book" style="font-size:2.6rem;color:#DDD8CC;"></i>
+    <p class="text-muted mt-2 mb-0">Nenhum livro encontrado.</p>
+</div>
 {% endif %}
 {% endblock %}

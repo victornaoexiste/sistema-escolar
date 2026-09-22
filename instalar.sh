@@ -2,7 +2,14 @@
 # Instalador do Vereda (Linux/macOS) — cria o ambiente virtual, instala as
 # dependências e prepara o banco de dados. Rode uma vez só (ou de novo se
 # o requirements.txt mudar).
+#
+# Uso: ./instalar.sh [--auto]
+#   --auto  pula a pergunta do final — usado quando este script é chamado
+#           por outro script, sem ninguém sentado no teclado.
 set -e
+
+AUTO=0
+[ "$1" = "--auto" ] && AUTO=1
 
 cd "$(dirname "$0")"
 
@@ -42,7 +49,11 @@ echo "-> Aplicando migrações do banco de dados"
 python manage.py migrate
 
 # 6. Perguntar se quer criar os usuários de teste
-read -p "Criar usuários e dados de exemplo pra testar (admin, professor1, secretaria1, aluno1)? [S/n] " resposta
+if [ "$AUTO" = "1" ]; then
+    resposta=S
+else
+    read -p "Criar usuários e dados de exemplo pra testar (admin, professor1, secretaria1, aluno1)? [S/n] " resposta
+fi
 resposta=${resposta:-S}
 if [[ "$resposta" =~ ^[Ss]$ ]]; then
     python manage.py seed_demo

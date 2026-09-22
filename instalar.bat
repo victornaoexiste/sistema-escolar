@@ -2,6 +2,14 @@
 REM Instalador do Vereda (Windows) -- cria o ambiente virtual, instala as
 REM dependencias e prepara o banco de dados. Rode uma vez so (ou de novo se
 REM o requirements.txt mudar).
+REM
+REM Uso: instalar.bat [/auto]
+REM   /auto  pula as perguntas e o "pressione uma tecla" do final -- usado
+REM          quando este script e chamado por outro script (ex.: setup
+REM          automatico de uma maquina nova), sem ninguem sentado no teclado.
+
+set "AUTO=0"
+if /i "%~1"=="/auto" set "AUTO=1"
 
 cd /d "%~dp0"
 
@@ -56,7 +64,11 @@ echo -^> Aplicando migracoes do banco de dados
 python manage.py migrate
 
 REM 6. Perguntar se quer criar os usuarios de teste
-set /p resposta="Criar usuarios e dados de exemplo pra testar (admin, professor1, secretaria1, aluno1)? [S/n] "
+if "%AUTO%"=="1" (
+    set "resposta=S"
+) else (
+    set /p resposta="Criar usuarios e dados de exemplo pra testar (admin, professor1, secretaria1, aluno1)? [S/n] "
+)
 if "%resposta%"=="" set resposta=S
 if /i "%resposta%"=="S" (
     python manage.py seed_demo
@@ -64,5 +76,9 @@ if /i "%resposta%"=="S" (
 
 echo.
 echo === Instalacao concluida! ===
-echo Pra subir o servidor, de dois cliques em rodar.bat
-pause
+if "%AUTO%"=="1" (
+    echo Pra subir o servidor, de dois cliques em rodar.bat
+) else (
+    echo Pra subir o servidor, de dois cliques em rodar.bat
+    pause
+)

@@ -1,53 +1,152 @@
 {% extends 'base.html' %}
 {% block titulo %}Painel do Professor{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-4">Olá, {{ user.get_full_name|default:user.username }}!</h1>
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+    <div>
+        <div class="small fw-semibold mb-2" style="color:var(--accent-dark);letter-spacing:.06em;text-transform:uppercase;">Professor</div>
+        <h1 class="titulo-hero mb-2">Olá, {{ user.get_full_name|default:user.username }}.</h1>
+        <p class="mb-0 fs-5" style="color:var(--ink-soft);max-width:48ch;">Lance aulas, marque presença e acompanhe suas turmas.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'diario:nova_aula' %}" class="btn btn-primary"><i class="bi bi-journal-plus"></i> Lançar aula</a>
+        <a href="{% url 'diario:presenca_rapida' %}" class="btn" style="background:var(--blaze);border-color:var(--blaze);color:#fff;"><i class="bi bi-check2-square"></i> Marcar presença</a>
+    </div>
+</div>
 
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card card-hover h-100 shadow-sm">
+<div class="acoes-rapidas mb-4">
+    <a href="{% url 'biblioteca:enviar' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-upload"></i> Enviar livro</a>
+    <a href="{% url 'avisos:novo' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-megaphone-fill"></i> Publicar aviso</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card mb-3">
             <div class="card-body">
-                <div class="icon-badge bg-1"><i class="bi bi-journal-plus"></i></div>
-                <h2 class="h5">Lançar aula</h2>
-                <p class="text-muted">Registre o conteúdo dado hoje e marque a presença dos alunos.</p>
-                <a href="{% url 'diario:nova_aula' %}" class="btn btn-primary btn-sm">Lançar aula</a>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h2 class="h5 mb-0"><i class="bi bi-calendar-check me-1"></i> Suas aulas de hoje</h2>
+                    <a href="{% url 'diario:horarios' %}" class="fw-semibold">Semana completa <i class="bi bi-chevron-right"></i></a>
+                </div>
+                {% if horarios_hoje %}
+                    {% for h in horarios_hoje %}
+                    <div class="timeline-aula">
+                        <div class="ponto-col">
+                            <span class="ponto"></span>
+                            <span class="linha"></span>
+                        </div>
+                        <div class="pb-4 flex-grow-1">
+                            <span class="font-mono fw-semibold d-block mb-1" style="color:var(--accent-dark);font-size:.88rem;">{{ h.hora_inicio|time:'H:i' }} – {{ h.hora_fim|time:'H:i' }}</span>
+                            <div class="fw-bold fs-5 mb-1">{{ h.disciplina }}</div>
+                            <div class="text-muted">{{ h.turma }}{% if h.sala %} · Sala {{ h.sala }}{% endif %}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">Sem aulas hoje na sua grade.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h2 class="h5 mb-0"><i class="bi bi-journal-text me-1"></i> Últimas aulas lançadas</h2>
+                        </div>
+                        {% if aulas %}
+                            <div class="lista-trilha">
+                                {% for aula in aulas %}
+                                <a href="{% url 'diario:turma' aula.turma_id %}" class="item-trilha">
+                                    <span class="marcador"></span>
+                                    <div class="corpo">
+                                        <div class="linha-1">
+                                            <span class="titulo-item">{{ aula.disciplina }}</span>
+                                            <span class="meta font-mono">{{ aula.data|date:'d/m' }}</span>
+                                        </div>
+                                        <div class="detalhe">{{ aula.turma }}</div>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">Você ainda não lançou nenhuma aula.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h2 class="h5 mb-0"><i class="bi bi-calendar3 me-1"></i> Próximos eventos</h2>
+                            <a href="{% url 'calendario:lista' %}" class="fw-semibold">Todos</a>
+                        </div>
+                        {% if proximos_eventos %}
+                            {% for evento in proximos_eventos %}
+                            <div class="d-flex align-items-center gap-3 py-2">
+                                <span class="data-selo">
+                                    <span class="selo-mes">{{ evento.data_inicio|date:"M"|upper }}</span>
+                                    <span class="selo-dia">{{ evento.data_inicio|date:"d" }}</span>
+                                </span>
+                                <div class="min-w-0">
+                                    <div class="fw-semibold">{{ evento.titulo }}</div>
+                                    {% if evento.turma %}<div class="text-muted small">{{ evento.turma }}</div>{% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">Nenhum evento agendado.</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card card-hover h-100 shadow-sm">
+
+    <div class="col-lg-4">
+        <div class="card mb-3">
             <div class="card-body">
-                <div class="icon-badge bg-3"><i class="bi bi-check2-square"></i></div>
-                <h2 class="h5">Marcar presença</h2>
-                <p class="text-muted">Só a chamada, sem precisar preencher o conteúdo da aula.</p>
-                <a href="{% url 'diario:presenca_rapida' %}" class="btn btn-primary btn-sm">Marcar presença</a>
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <h2 class="h5 mb-0"><i class="bi bi-megaphone-fill me-1"></i> Avisos</h2>
+                    <a href="{% url 'avisos:lista' %}" class="fw-semibold">Todos <i class="bi bi-chevron-right"></i></a>
+                </div>
+                {% if avisos_recentes %}
+                    {% for aviso in avisos_recentes %}
+                    <div class="aviso-item">
+                        <div class="aviso-eyebrow">{{ aviso.autor.get_tipo_display|default:"Escola" }} · {{ aviso.criado_em|date:'d/m' }}</div>
+                        <div class="aviso-titulo">{{ aviso.titulo }}</div>
+                        <div class="aviso-corpo">{{ aviso.corpo|truncatewords:18 }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">Nenhum aviso no momento.</p>
+                {% endif %}
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card card-hover h-100 shadow-sm">
+
+        <div class="card">
             <div class="card-body">
-                <div class="icon-badge bg-2"><i class="bi bi-book-half"></i></div>
-                <h2 class="h5">Biblioteca Virtual</h2>
-                <p class="text-muted">Envie livros para os alunos lerem ou baixarem.</p>
-                <a href="{% url 'biblioteca:enviar' %}" class="btn btn-primary btn-sm">Enviar livro</a>
-                <a href="{% url 'biblioteca:lista' %}" class="btn btn-outline-secondary btn-sm">Ver acervo</a>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h2 class="h5 mb-0"><i class="bi bi-book-half me-1"></i> Biblioteca Virtual</h2>
+                    <a href="{% url 'biblioteca:lista' %}" class="fw-semibold">Acervo</a>
+                </div>
+                {% if livros_recentes %}
+                    <div class="lista-trilha">
+                        {% for livro in livros_recentes %}
+                        <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="item-trilha">
+                            <span class="marcador"></span>
+                            <div class="corpo linha-1">
+                                <span class="titulo-item">{{ livro.titulo }}</span>
+                                <span class="meta">{{ livro.autor }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Nenhum livro enviado ainda.</p>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
-
-<h2 class="h5">Últimas aulas lançadas</h2>
-{% if aulas %}
-<div class="list-group">
-    {% for aula in aulas %}
-    <a href="{% url 'diario:turma' aula.turma_id %}" class="list-group-item list-group-item-action d-flex justify-content-between">
-        <span>{{ aula.turma }} — {{ aula.disciplina }}</span>
-        <span class="text-muted">{{ aula.data|date:'d/m/Y' }}</span>
-    </a>
-    {% endfor %}
-</div>
-{% else %}
-<p class="text-muted">Você ainda não lançou nenhuma aula.</p>
-{% endif %}
 {% endblock %}

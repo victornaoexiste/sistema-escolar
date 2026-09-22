@@ -364,6 +364,34 @@
         .aviso-item .aviso-titulo{ font-weight:700; font-size:1.02rem; margin-bottom:.25rem; }
         .aviso-item .aviso-corpo{ color:var(--ink-soft); font-size:.9rem; }
 
+        /* ---- cartão de aula com "foto" (gradiente decorativo, sem imagem real) ---- */
+        .aula-foto-card{
+            display:block; text-decoration:none; border-radius:1.1rem; overflow:hidden;
+            background:var(--surface); border:1px solid var(--line);
+        }
+        .aula-foto-capa{
+            position:relative; height:150px;
+            background:linear-gradient(160deg, var(--accent-soft) 0%, var(--blaze-soft) 100%);
+            display:flex; align-items:center; justify-content:center;
+        }
+        .aula-foto-capa i{ font-size:2.6rem; color:var(--accent-dark); opacity:.55; }
+        .aula-foto-selo{
+            position:absolute; top:.85rem; left:.85rem; padding:.3rem .7rem; border-radius:999px;
+            background:rgba(35,30,21,.72); color:#fff; font-size:.62rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:.06em;
+        }
+        .aula-foto-corpo{ padding:1rem 1.1rem 1.15rem; }
+        .aula-foto-titulo{ font-weight:700; font-size:1rem; color:var(--ink); margin-bottom:.2rem; }
+        .aula-foto-sub{ color:var(--ink-soft); font-size:.85rem; }
+
+        /* ---- cartão de citação (branding estático) ---- */
+        .citacao-card{
+            border-radius:1.1rem; padding:1.6rem 1.5rem; background:var(--accent-soft);
+            border:1px solid var(--line);
+        }
+        .citacao-texto{ font-style:italic; font-size:1.05rem; color:var(--mata); line-height:1.5; margin-bottom:.75rem; }
+        .citacao-assinatura{ font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-dark); }
+
         .alert{ border-radius:.5rem; border:1px solid rgba(34,31,26,.12); }
         .badge{ font-weight:600; border-radius:.35rem; }
         .dropdown-menu{ border-color:var(--line); border-radius:.5rem; }

@@ -115,6 +115,33 @@
                 </div>
             </div>
         </div>
+
+        {% if aulas %}
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h2 class="h5 mb-0"><i class="bi bi-journal-richtext me-1"></i> Aulas recentes</h2>
+                    {% if user.turma %}<a href="{% url 'diario:turma' user.turma_id %}" class="fw-semibold">Diário</a>{% endif %}
+                </div>
+                <div class="row g-3">
+                    {% for aula in aulas|slice:":2" %}
+                    <div class="col-sm-6">
+                        <div class="aula-foto-card">
+                            <div class="aula-foto-capa">
+                                <span class="aula-foto-selo">Material de aula</span>
+                                <i class="bi bi-journal-text"></i>
+                            </div>
+                            <div class="aula-foto-corpo">
+                                <div class="aula-foto-titulo">{{ aula.disciplina }}</div>
+                                <div class="aula-foto-sub">{{ aula.turma }} · {{ aula.data|date:'d/m' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <div class="col-lg-4">
@@ -179,6 +206,11 @@
                     <p class="text-muted mb-0">Ainda não há aulas registradas.</p>
                 {% endif %}
             </div>
+        </div>
+
+        <div class="citacao-card mt-3">
+            <div class="citacao-texto">"Cada etapa do caminho abre uma nova possibilidade."</div>
+            <div class="citacao-assinatura">Vereda</div>
         </div>
     </div>
 </div>

@@ -15,10 +15,25 @@ Feito com **Python + Django + SQLite + Bootstrap**.
 
 ## Como rodar o projeto
 
+### Caminho rápido (scripts prontos)
+
+**Linux/macOS:**
+```bash
+./instalar.sh   # só na primeira vez (ou se mudar o requirements.txt)
+./rodar.sh      # sempre que for subir o servidor
+```
+
+**Windows:** dê dois cliques em `instalar.bat` (só na primeira vez) e depois em `rodar.bat` (sempre que for subir o servidor). Se o Windows nunca teve Python instalado, baixe em https://www.python.org/downloads/windows/ e marque a opção "Add python.exe to PATH" no instalador antes de rodar o `instalar.bat`.
+
+O instalador cria o ambiente virtual, instala as dependências, aplica as migrações e pergunta se você quer criar os usuários/dados de exemplo.
+
+### Caminho manual
+
 Abra um terminal dentro da pasta `sistema-escolar` e rode, na ordem:
 
 ```bash
-# 1. Ativar o ambiente virtual (já vem criado)
+# 1. Criar e ativar o ambiente virtual (só na primeira vez)
+python3 -m venv venv
 source venv/bin/activate
 
 # 2. Instalar as dependências (só precisa na primeira vez, ou se mudar o requirements.txt)

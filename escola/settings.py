@@ -34,6 +34,12 @@ ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '127.
 
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
 
+# Com DEBUG=False (ex: rodando atrás de HTTPS de verdade) os cookies de sessão
+# e de CSRF só trafegam por conexão segura. Em desenvolvimento local (DEBUG=True,
+# http://127.0.0.1) isso ficaria desligado, senão o login nem funcionaria.
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
 
 # Application definition
 
@@ -49,6 +55,7 @@ INSTALLED_APPS = [
     'diario',
     'avisos',
     'calendario',
+    'demanda',
 ]
 
 AUTH_USER_MODEL = 'contas.Usuario'

@@ -19,21 +19,23 @@ class Command(BaseCommand):
         matematica, _ = Disciplina.objects.get_or_create(nome='Matemática')
         portugues, _ = Disciplina.objects.get_or_create(nome='Português')
 
+        senha_demo = '741852963ç'
+
         if not Usuario.objects.filter(username='admin').exists():
             Usuario.objects.create_superuser(
-                username='admin', password='admin123', email='admin@escola.local', tipo=Usuario.Tipo.ADMIN
+                username='admin', password=senha_demo, email='admin@escola.local', tipo=Usuario.Tipo.ADMIN
             )
-            self.stdout.write(self.style.SUCCESS('Criado: admin / admin123'))
+            self.stdout.write(self.style.SUCCESS(f'Criado: admin / {senha_demo}'))
 
         if not Usuario.objects.filter(username='secretaria1').exists():
             Usuario.objects.create_user(
                 username='secretaria1',
-                password='secretaria123',
+                password=senha_demo,
                 first_name='Maria',
                 last_name='Secretaria',
                 tipo=Usuario.Tipo.SECRETARIA,
             )
-            self.stdout.write(self.style.SUCCESS('Criado: secretaria1 / secretaria123'))
+            self.stdout.write(self.style.SUCCESS(f'Criado: secretaria1 / {senha_demo}'))
 
         professor, criado = Usuario.objects.get_or_create(
             username='professor1',
@@ -44,9 +46,9 @@ class Command(BaseCommand):
             },
         )
         if criado:
-            professor.set_password('professor123')
+            professor.set_password(senha_demo)
             professor.save()
-            self.stdout.write(self.style.SUCCESS('Criado: professor1 / professor123'))
+            self.stdout.write(self.style.SUCCESS(f'Criado: professor1 / {senha_demo}'))
 
         aluno, criado = Usuario.objects.get_or_create(
             username='aluno1',
@@ -60,9 +62,9 @@ class Command(BaseCommand):
             },
         )
         if criado:
-            aluno.set_password('aluno123')
+            aluno.set_password(senha_demo)
             aluno.save()
-            self.stdout.write(self.style.SUCCESS('Criado: aluno1 / aluno123'))
+            self.stdout.write(self.style.SUCCESS(f'Criado: aluno1 / {senha_demo}'))
 
         HorarioAula.objects.get_or_create(
             turma=turma, disciplina=matematica, dia_semana=HorarioAula.DiaSemana.SEGUNDA,

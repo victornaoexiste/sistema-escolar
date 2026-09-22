@@ -32,6 +32,13 @@ def baixar(request, pk):
     return FileResponse(livro.arquivo.open('rb'), as_attachment=True, filename=f'{livro.titulo}.pdf')
 
 
+@login_required
+def ler(request, pk):
+    """Serve o PDF inline (pro leitor embutido) sem expor a URL pública do /media/."""
+    livro = get_object_or_404(Livro, pk=pk)
+    return FileResponse(livro.arquivo.open('rb'), as_attachment=False, filename=f'{livro.titulo}.pdf')
+
+
 @somente('admin', 'professor')
 def enviar(request):
     if request.method == 'POST':

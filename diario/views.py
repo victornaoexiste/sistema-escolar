@@ -83,6 +83,11 @@ def presenca_rapida(request):
 @somente('admin', 'professor', 'secretaria')
 def presenca(request, pk):
     aula = get_object_or_404(Aula, pk=pk)
+
+    if request.user.is_professor and aula.professor_id != request.user.id:
+        messages.error(request, 'Você só pode alterar a presença das próprias aulas.')
+        return redirect('contas:painel')
+
     alunos = Usuario.objects.filter(tipo=Usuario.Tipo.ALUNO, turma=aula.turma).order_by('first_name', 'username')
 
     if request.method == 'POST':

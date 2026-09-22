@@ -40,10 +40,10 @@ Depois abra **http://127.0.0.1:8000/** no navegador.
 
 | Papel      | Usuário       | Senha           |
 |------------|---------------|-----------------|
-| Admin      | `admin`       | `admin123`      |
-| Secretaria | `secretaria1` | `secretaria123` |
-| Professor  | `professor1`  | `professor123`  |
-| Aluno      | `aluno1`      | `aluno123`      |
+| Admin      | `admin`       | `741852963ç`    |
+| Secretaria | `secretaria1` | `741852963ç`    |
+| Professor  | `professor1`  | `741852963ç`    |
+| Aluno      | `aluno1`      | `741852963ç`    |
 
 > Troque essas senhas (ou apague esses usuários) antes de apresentar/publicar o projeto de verdade — elas são só para teste local.
 

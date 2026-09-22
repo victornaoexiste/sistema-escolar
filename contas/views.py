@@ -3,6 +3,9 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
+
+from escola.throttle import limitar_por_ip
 
 from .decorators import somente
 from .documentos import gerar_declaracao_matricula, gerar_extrato_frequencia
@@ -10,9 +13,16 @@ from .forms import AlunoCadastroForm, AlunoEdicaoForm
 from .models import Usuario
 
 
+@method_decorator(limitar_por_ip('login', max_tentativas=10, janela_segundos=900), name='post')
 class TelaLogin(auth_views.LoginView):
     template_name = 'contas/login.html'
     redirect_authenticated_user = True
+
+
+def home(request):
+    if request.user.is_authenticated:
+        return redirect('contas:painel')
+    return render(request, 'contas/home.html')
 
 
 @login_required
@@ -20,16 +30,35 @@ def painel(request):
     usuario = request.user
 
     if usuario.is_admin or usuario.is_secretaria:
+        from django.db.models import Count
+        from django.utils import timezone
+
+        from avisos.models import Aviso
+        from biblioteca.models import Livro
         from calendario.models import EventoCalendario
         from diario.frequencia import alunos_em_risco_por_turma
+        from diario.models import Aula, HorarioAula, Turma
 
         alunos_count = Usuario.objects.filter(tipo=Usuario.Tipo.ALUNO).count()
         turmas_em_risco = alunos_em_risco_por_turma()
-        proximos_eventos = EventoCalendario.objects.futuros()[:3]
+        turmas = Turma.objects.annotate(num_alunos=Count('alunos')).select_related('curso')
+        proximos_eventos = EventoCalendario.objects.futuros()[:5]
+        avisos_recentes = Aviso.objects.order_by('-criado_em')[:6]
+        livros_recentes = Livro.objects.order_by('-enviado_em')[:6]
+        aulas_recentes = Aula.objects.select_related('turma', 'disciplina').order_by('-data', '-criado_em')[:6]
+        hoje = timezone.localdate()
+        horarios_hoje = HorarioAula.objects.filter(dia_semana=hoje.weekday()).select_related(
+            'turma', 'disciplina'
+        ).order_by('hora_inicio')[:8]
         contexto = {
             'alunos_count': alunos_count,
             'turmas_em_risco': turmas_em_risco,
+            'turmas': turmas,
             'proximos_eventos': proximos_eventos,
+            'avisos_recentes': avisos_recentes,
+            'livros_recentes': livros_recentes,
+            'aulas_recentes': aulas_recentes,
+            'horarios_hoje': horarios_hoje,
         }
 
         if usuario.is_admin:
@@ -37,10 +66,32 @@ def painel(request):
         return render(request, 'contas/painel_secretaria.html', contexto)
 
     if usuario.is_professor:
-        from diario.models import Aula
+        from django.utils import timezone
 
-        aulas = Aula.objects.filter(professor=usuario).order_by('-data')[:5]
-        return render(request, 'contas/painel_professor.html', {'aulas': aulas})
+        from avisos.models import Aviso
+        from biblioteca.models import Livro
+        from calendario.models import EventoCalendario
+        from diario.models import Aula, HorarioAula
+
+        aulas = Aula.objects.filter(professor=usuario).order_by('-data')[:6]
+        hoje = timezone.localdate()
+        horarios_hoje = HorarioAula.objects.filter(
+            professor=usuario, dia_semana=hoje.weekday()
+        ).select_related('turma', 'disciplina').order_by('hora_inicio')
+        avisos_recentes = Aviso.objects.order_by('-criado_em')[:6]
+        livros_recentes = Livro.objects.order_by('-enviado_em')[:6]
+        proximos_eventos = EventoCalendario.objects.futuros()[:5]
+        return render(
+            request,
+            'contas/painel_professor.html',
+            {
+                'aulas': aulas,
+                'horarios_hoje': horarios_hoje,
+                'avisos_recentes': avisos_recentes,
+                'livros_recentes': livros_recentes,
+                'proximos_eventos': proximos_eventos,
+            },
+        )
 
     from django.db.models import Q
     from django.utils import timezone
@@ -69,7 +120,7 @@ def painel(request):
         filtro_avisos |= Q(publico=Aviso.Publico.CURSO, curso=usuario.turma.curso)
         filtro_eventos |= Q(turma=usuario.turma)
     avisos_recentes = Aviso.objects.filter(filtro_avisos).order_by('-criado_em')[:5]
-    proximos_eventos = EventoCalendario.objects.futuros().filter(filtro_eventos)[:3]
+    proximos_eventos = EventoCalendario.objects.futuros().filter(filtro_eventos)[:5]
 
     return render(
         request,

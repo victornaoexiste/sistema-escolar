@@ -9,4 +9,5 @@ urlpatterns = [
     path('enviar/', views.enviar, name='enviar'),
     path('<int:pk>/', views.detalhe, name='detalhe'),
     path('<int:pk>/baixar/', views.baixar, name='baixar'),
+    path('<int:pk>/ler/', views.ler, name='ler'),
 ]

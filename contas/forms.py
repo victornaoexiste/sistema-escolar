@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from .models import Usuario
 
@@ -33,6 +35,24 @@ class AlunoCadastroForm(forms.ModelForm):
         fields = _CAMPOS_ALUNO
         widgets = _WIDGETS_ALUNO
         labels = _LABELS_ALUNO
+
+    def clean(self):
+        cleaned_data = super().clean()
+        senha = cleaned_data.get('password')
+        if senha:
+            # Usa os dados já digitados (usuário, nome, e-mail) pra validação de
+            # similaridade — a instância do form ainda não tem esses campos aqui.
+            aluno_provisorio = Usuario(
+                username=cleaned_data.get('username', ''),
+                first_name=cleaned_data.get('first_name', ''),
+                last_name=cleaned_data.get('last_name', ''),
+                email=cleaned_data.get('email', ''),
+            )
+            try:
+                validate_password(senha, aluno_provisorio)
+            except ValidationError as erro:
+                self.add_error('password', erro)
+        return cleaned_data
 
     def save(self, commit=True):
         aluno = super().save(commit=False)

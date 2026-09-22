@@ -105,11 +105,26 @@ def painel(request):
     aulas = []
     horarios_hoje = []
     minha_frequencia_geral = None
+    agora = timezone.localtime()
     if usuario.turma:
         aulas = Aula.objects.filter(turma=usuario.turma).order_by('-data')[:5]
-        hoje = timezone.localdate()
-        horarios_hoje = usuario.turma.horarios.filter(dia_semana=hoje.weekday()).select_related('disciplina', 'professor')
+        hoje = agora.date()
+        horarios_qs = usuario.turma.horarios.filter(dia_semana=hoje.weekday()).select_related('disciplina', 'professor')
+        agora_hora = agora.time()
+        ja_marcou_proxima = False
+        for h in horarios_qs:
+            if h.hora_inicio <= agora_hora <= h.hora_fim:
+                status = 'atual'
+                ja_marcou_proxima = True
+            elif not ja_marcou_proxima and h.hora_inicio > agora_hora:
+                status = 'proxima'
+                ja_marcou_proxima = True
+            else:
+                status = 'passada'
+            horarios_hoje.append({'horario': h, 'status': status})
         minha_frequencia_geral = frequencia_geral(usuario.turma, usuario)
+
+    saudacao = 'Bom dia' if agora.hour < 12 else ('Boa tarde' if agora.hour < 18 else 'Boa noite')
 
     livros = Livro.objects.order_by('-enviado_em')[:5]
 
@@ -132,6 +147,8 @@ def painel(request):
             'avisos_recentes': avisos_recentes,
             'minha_frequencia_geral': minha_frequencia_geral,
             'proximos_eventos': proximos_eventos,
+            'saudacao': saudacao,
+            'hoje': agora.date(),
         },
     )
 

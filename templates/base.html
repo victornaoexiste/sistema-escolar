@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -11,22 +12,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         /*
-         * Identidade: instituto técnico, não "escolinha azul-e-branco".
-         * Papel + tinta + uma cor de placa de circuito como acento — sóbrio,
-         * sem gradiente nem sombra decorativa; números tabulares em mono
-         * (matrícula, horário, frequência) porque são dado, não rótulo.
+         * Identidade: Vereda = trilha. A sidebar é verde-mata profundo (não
+         * cinza de admin genérico); o item ativo do menu leva uma "faixa"
+         * sólida como as tintas que marcam trilha em árvore/poste. Listas não
+         * usam linha fina de planilha — usam um marcador de trilha (ponto) e
+         * respiro vertical. Números tabulares em mono (matrícula, horário,
+         * frequência) porque são dado, não rótulo.
          */
         :root{
-            --paper:#EEEBDE;
-            --surface:#FAF8F1;
-            --ink:#221F1A;
-            --ink-soft:#6B6558;
-            --line:#DAD2BC;
-            --accent:#1F6F4A;
+            --paper:#F2EAD8;
+            --surface:#FBF6E9;
+            --ink:#231E15;
+            --ink-soft:#6E6552;
+            --line:#E1D6B8;
+            --accent:#2B6B49;
             --accent-dark:#154F35;
             --accent-soft:#DCEAE1;
-            --signal:#B8791A;
-            --signal-soft:#F3E3C4;
+            --mata:#153A26;
+            --mata-luz:#1E4E33;
+            --blaze:#BD5B23;
+            --blaze-soft:#F3DEC7;
+            --signal:var(--blaze);
+            --signal-soft:var(--blaze-soft);
             --danger:#A3402F;
             --danger-soft:#F1DCD3;
 
@@ -61,7 +68,7 @@
             --bs-warning-rgb:184,121,26;
             --bs-warning-bg-subtle:var(--signal-soft);
             --bs-warning-border-subtle:#E3C48C;
-            --bs-warning-text-emphasis:#7A5112;
+            --bs-warning-text-emphasis:#7A3216;
 
             --bs-danger:var(--danger);
             --bs-danger-rgb:163,64,47;
@@ -79,63 +86,117 @@
             --bs-dark:var(--ink);
         }
 
-        body{ background:var(--paper); color:var(--ink); }
-        h1,h2,h3,h4,h5,h6,.navbar-brand,.brand-font{
+        body{ background:var(--paper); color:var(--ink); font-size:.975rem; line-height:1.55; }
+        h1,h2,h3,h4,h5,h6,.brand-font{
             font-family:'IBM Plex Sans',system-ui,sans-serif;
-            font-weight:600; letter-spacing:-.01em; color:var(--ink);
+            font-weight:700; letter-spacing:-.015em; color:var(--ink);
         }
+        h1{ font-size:1.85rem; }
         .font-mono{ font-family:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace; font-variant-numeric:tabular-nums; }
 
-        /* ---- navbar: barra sólida de tinta, sem gradiente ---- */
-        .navbar-brand-bar{ background:var(--ink); border-bottom:3px solid var(--accent); box-shadow:none; }
+        /* ---- sidebar: mata fechada, não cinza de admin genérico ---- */
+        .marca-badge{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:38px; height:38px; border-radius:.6rem; flex:none;
+            background:#FBF8F0; box-shadow:0 1px 3px rgba(21,58,38,.25);
+        }
+        .marca-badge .marca-v{ width:24px; height:auto; display:block; }
+        .app-sidebar{
+            position:fixed; top:0; left:0; bottom:0; width:250px;
+            background:var(--mata);
+            background-image:linear-gradient(165deg, var(--mata-luz) 0%, var(--mata) 45%);
+            z-index:1030; overflow-y:auto;
+        }
+        .sidebar-brand{
+            display:flex; align-items:center; gap:.65rem;
+            padding:1.4rem 1.35rem 1.15rem;
+            text-decoration:none;
+        }
+        .sidebar-brand .marca-texto{ display:flex; flex-direction:column; line-height:1.2; }
+        .sidebar-brand .marca-nome{
+            font-family:'IBM Plex Sans',system-ui,sans-serif; letter-spacing:-.015em;
+            font-weight:700; font-size:1.15rem; color:#FBF6E9;
+        }
+        .sidebar-brand .marca-sub{
+            font-size:.62rem; font-weight:600; letter-spacing:.09em; text-transform:uppercase;
+            color:rgba(251,246,233,.55); margin-top:.1rem;
+        }
+        .offcanvas-title{ display:flex; align-items:center; gap:.6rem; }
+        .offcanvas-title .marca-badge{ width:32px; height:32px; }
+        .offcanvas-title .marca-badge .marca-v{ width:20px; }
+        .sidebar-nav{ list-style:none; margin:0; padding:.25rem 0 1rem; }
+        .app-sidebar .nav-link, .offcanvas .nav-link{
+            display:flex; align-items:center; gap:.65rem;
+            font-weight:500; color:rgba(251,246,233,.68) !important;
+            border-radius:0; padding:.6rem 1.35rem !important;
+            border-left:4px solid transparent; white-space:nowrap;
+            transition:background-color .12s ease, color .12s ease;
+        }
+        .app-sidebar .nav-link i, .offcanvas .nav-link i{ font-size:.95rem; opacity:.85; }
+        .app-sidebar .nav-link:hover, .offcanvas .nav-link:hover{
+            color:#FBF6E9 !important; background:rgba(251,246,233,.07);
+        }
+        .app-sidebar .nav-link.active, .offcanvas .nav-link.active{
+            color:#FBF6E9 !important; font-weight:600;
+            border-left-color:var(--blaze); background:rgba(251,246,233,.09);
+        }
+        .sidebar-user{
+            margin-top:auto; padding:1.1rem 1.35rem; border-top:1px solid rgba(251,246,233,.14);
+            display:flex; flex-direction:column; gap:.85rem;
+        }
+        .usuario-linha{ display:flex; align-items:center; gap:.7rem; min-width:0; }
+        .avatar-circulo{
+            width:36px; height:36px; border-radius:50%; flex:none;
+            display:inline-flex; align-items:center; justify-content:center;
+            background:rgba(251,246,233,.16); color:#FBF6E9;
+            font-weight:700; font-size:.83rem;
+        }
+        .usuario-texto{ display:flex; flex-direction:column; line-height:1.3; min-width:0; }
+        .usuario-nome{ color:#FBF6E9; font-weight:600; font-size:.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .usuario-papel{ color:rgba(251,246,233,.55); font-size:.72rem; }
+        .app-content{ min-height:100vh; }
+        @media (min-width: 992px){
+            .app-content{ margin-left:250px; }
+        }
+
+        /* ---- barra mobile + menu deslizante ---- */
+        .navbar-brand-bar{ background:var(--mata); box-shadow:none; }
         .navbar-brand-bar .navbar-brand{
-            font-weight:700; font-size:1.1rem; display:inline-flex; align-items:center; gap:.5rem;
+            font-family:'IBM Plex Sans',system-ui,sans-serif; letter-spacing:-.015em;
+            font-weight:700; font-size:1.1rem; color:#FBF6E9;
+            display:inline-flex; align-items:center; gap:.55rem;
         }
-        .navbar-brand-bar .navbar-brand i{ color:var(--accent); }
-        .navbar-brand-bar .nav-link{
-            font-weight:500; color:rgba(250,248,241,.72) !important;
-            border-radius:0; padding:.55rem .8rem !important; margin:0 .05rem;
-            border-bottom:2px solid transparent;
+        .navbar-brand-bar .navbar-brand .marca-badge{ width:32px; height:32px; }
+        .navbar-brand-bar .navbar-brand .marca-badge .marca-v{ width:20px; }
+        .offcanvas{ background:var(--mata); }
+        .offcanvas-title{ color:#FBF6E9; font-weight:700; }
+        .navbar-user-block{
+            margin-top:1.25rem; padding-top:1rem; border-top:1px solid rgba(251,246,233,.14);
+            display:flex; flex-direction:column; gap:.85rem;
         }
-        .navbar-brand-bar .nav-link:hover{ color:#FAF8F1 !important; border-bottom-color:rgba(250,248,241,.35); }
-        .navbar-brand-bar .nav-link.active{ color:#FAF8F1 !important; font-weight:600; border-bottom-color:var(--accent); }
-        .navbar-brand-bar .badge{ font-weight:600; }
+        .navbar-user-block form, .navbar-user-block .btn{ width:100%; }
 
-        /* ---- menu mobile: painel lateral deslizante, não dropdown espremido ---- */
-        .offcanvas{ background:var(--ink); }
-        .offcanvas-title{ color:#FAF8F1; font-weight:700; }
-        @media (max-width: 991.98px){
-            .navbar-brand-bar .nav-link{
-                border-bottom:none; border-left:3px solid transparent;
-                padding:.7rem .9rem !important; border-radius:0;
-            }
-            .navbar-brand-bar .nav-link:hover{ border-left-color:rgba(250,248,241,.35); background:rgba(250,248,241,.06); }
-            .navbar-brand-bar .nav-link.active{ border-left-color:var(--accent); background:rgba(250,248,241,.08); }
-            .navbar-user-block{
-                margin-top:1.25rem; padding-top:1rem; border-top:1px solid rgba(250,248,241,.15);
-                display:flex; flex-direction:column; align-items:flex-start; gap:.6rem;
-            }
-            .navbar-user-block .navbar-text{ margin:0 !important; }
-            .navbar-user-block form, .navbar-user-block .btn{ width:100%; }
-        }
-
-        /* ---- botões: preenchimento chapado, sem sombra nem elevação ---- */
+        /* ---- botões: preenchimento chapado, leve relevo no primário ---- */
         .btn{
             font-weight:600; border-radius:.4rem; padding:.5rem 1.05rem;
-            transition:background-color .12s ease, border-color .12s ease, color .12s ease;
+            transition:background-color .12s ease, border-color .12s ease, color .12s ease, transform .08s ease;
         }
         .btn-sm{ padding:.35rem .75rem; border-radius:.35rem; }
         .btn-lg{ padding:.7rem 1.4rem; font-size:1.02rem; border-radius:.45rem; }
-        .btn-primary{ background-color:var(--accent) !important; border-color:var(--accent-dark) !important; color:#fff !important; }
+        .btn-primary{
+            background-color:var(--accent) !important; border-color:var(--accent-dark) !important; color:#fff !important;
+            box-shadow:0 1px 0 rgba(21,79,53,.4);
+        }
         .btn-primary:hover{ background-color:var(--accent-dark) !important; border-color:var(--accent-dark) !important; }
-        .btn-outline-primary{ color:var(--accent) !important; border-color:var(--accent) !important; border-width:1.5px; }
+        .btn-primary:active{ transform:translateY(1px); box-shadow:none; }
+        .btn-outline-primary{ color:var(--accent-dark) !important; border-color:var(--accent) !important; border-width:1.5px; }
         .btn-outline-primary:hover{ background-color:var(--accent) !important; border-color:var(--accent) !important; color:#fff !important; }
         .btn-outline-secondary{ color:var(--ink-soft) !important; border-color:var(--line) !important; }
         .btn-outline-secondary:hover{ background-color:var(--ink-soft) !important; border-color:var(--ink-soft) !important; color:#fff !important; }
         .btn-outline-danger{ color:var(--danger) !important; border-color:var(--danger) !important; }
         .btn-outline-danger:hover{ background-color:var(--danger) !important; border-color:var(--danger) !important; color:#fff !important; }
-        .btn-outline-light{ color:#FAF8F1 !important; border-color:rgba(250,248,241,.5) !important; }
-        .btn-outline-light:hover{ background-color:rgba(250,248,241,.12) !important; border-color:#FAF8F1 !important; color:#FAF8F1 !important; }
+        .btn-outline-light{ color:#FBF6E9 !important; border-color:rgba(251,246,233,.5) !important; }
+        .btn-outline-light:hover{ background-color:rgba(251,246,233,.12) !important; border-color:#FBF6E9 !important; color:#FBF6E9 !important; }
 
         /* ---- Bootstrap Jr recompila cores em hex fixo em vários componentes;
            essas classes utilitárias/semânticas são sobrescritas direto pra valer
@@ -155,26 +216,137 @@
         .text-bg-danger{ background-color:var(--danger) !important; color:#fff !important; }
         .text-bg-info{ background-color:#3E6B84 !important; color:#fff !important; }
         .alert-danger{ background-color:var(--danger-soft) !important; color:#6B2A1D !important; }
-        .alert-warning{ background-color:var(--signal-soft) !important; color:#6B4712 !important; }
+        .alert-warning{ background-color:var(--signal-soft) !important; color:#6B3013 !important; }
         .table-danger, .table-danger > *{ --bs-table-bg:var(--danger-soft) !important; --bs-table-color:var(--ink) !important; }
 
-        /* ---- cards: ficha de papel, borda fina, sem sombra ---- */
-        .card{ background:var(--surface); border:1px solid var(--line); border-radius:.5rem; box-shadow:none; }
+        /* ---- cards: ficha de papel com relevo quente, não caixa cinza genérica ---- */
+        .card{
+            background:var(--surface); border:1px solid var(--line); border-radius:.65rem;
+            box-shadow:0 1px 2px rgba(35,30,21,.04), 0 6px 16px -10px rgba(35,30,21,.18);
+        }
         .shadow-sm, .shadow, .shadow-lg{ box-shadow:none !important; }
         a.card, .card.card-link{ text-decoration:none; color:inherit; transition:border-color .15s ease, transform .15s ease; }
         .card-hover:hover{ border-color:var(--accent); transform:translateY(-2px); }
         .list-group-item{ background:transparent; border-color:var(--line); }
 
+        /* ---- painéis: masonry de verdade (colunas CSS), cards encaixam sem vão vazio ---- */
+        .grade-painel{ column-count:1; column-gap:1.1rem; }
+        @media (min-width:992px){ .grade-painel{ column-count:2; } }
+        @media (min-width:1500px){ .grade-painel{ column-count:3; } }
+        .grade-painel .card{ break-inside:avoid; margin-bottom:1.1rem; display:inline-block; width:100%; }
+        .card-compacto .card-body{ padding:1.15rem 1.3rem; }
+        .card-compacto h2{
+            font-size:.8rem; font-weight:600; letter-spacing:.02em; margin-bottom:.85rem;
+            color:var(--ink-soft); text-transform:none;
+        }
+        .card-compacto h2 i{ color:var(--accent); }
+
+        /* ---- lista-trilha: substitui linha fina de planilha por marcador de trilha ---- */
+        .lista-trilha{ display:flex; flex-direction:column; }
+        .item-trilha{
+            display:flex; gap:.7rem; align-items:flex-start;
+            padding-block:.55rem; text-decoration:none; color:inherit;
+        }
+        .item-trilha:first-child{ padding-top:0; }
+        .item-trilha:last-child{ padding-bottom:0; }
+        .item-trilha .marcador{
+            width:7px; height:7px; margin-top:.5rem; border-radius:50%;
+            background:var(--line); flex:none;
+        }
+        a.item-trilha:hover .marcador{ background:var(--accent); transform:scale(1.3); }
+        a.item-trilha:hover .titulo-item{ color:var(--accent-dark); }
+        .item-trilha .marcador{ transition:background-color .15s ease, transform .15s ease; }
+        .item-trilha .corpo{ min-width:0; flex:1; }
+        .item-trilha .linha-1{ display:flex; justify-content:space-between; align-items:baseline; gap:.75rem; }
+        .item-trilha .titulo-item{ font-weight:600; color:var(--ink); }
+        .item-trilha .meta{ color:var(--ink-soft); font-size:.83rem; flex-shrink:0; }
+        .item-trilha .detalhe{ color:var(--ink-soft); font-size:.87rem; margin-top:.1rem; }
+
+        /* ---- página pública (home / levantamento de demanda) ---- */
+        .topo-publico{
+            display:flex; justify-content:space-between; align-items:center;
+            gap:1rem; margin-bottom:2rem; flex-wrap:wrap;
+        }
+        .marca-clara{
+            display:inline-flex; align-items:center; gap:.6rem; text-decoration:none;
+            font-weight:700; font-size:1.25rem; letter-spacing:-.015em; color:var(--ink);
+        }
+        .marca-clara .marca-badge{ width:36px; height:36px; }
+        .marca-clara .marca-badge .marca-v{ width:23px; }
+        .tagline-publica{ max-width:52ch; font-size:1.08rem; color:var(--ink-soft); margin-bottom:2rem; }
+        .btn-cta-demanda{
+            background:var(--blaze); border-color:var(--blaze); color:#fff; font-weight:700;
+            padding:.8rem 2rem; border-radius:.5rem;
+            box-shadow:0 6px 18px -6px rgba(189,91,35,.6);
+        }
+        .btn-cta-demanda:hover{ background:#A34D1C; border-color:#A34D1C; color:#fff; }
+
+        /* ---- barra de ações rápidas: substitui cards grandes só de atalho ---- */
+        .acoes-rapidas{ display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1.75rem; }
+        .acoes-rapidas .btn{ display:inline-flex; align-items:center; gap:.4rem; }
+
+        /* ---- entrada: painel "revelado" uma vez ao carregar, como marcar uma trilha ---- */
+        @keyframes vereda-surge{ from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
+        @keyframes vereda-marca{ from{ opacity:0; transform:translateX(-5px); } to{ opacity:1; transform:translateX(0); } }
+        .js-revela{ opacity:0; animation:vereda-surge .4s cubic-bezier(.2,.7,.3,1) forwards; }
+        .js-revela-item{ opacity:0; animation:vereda-marca .3s ease forwards; }
+        .btn:active{ transform:translateY(1px); }
+        .progress-bar{ transition:width 1s cubic-bezier(.16,.8,.3,1); }
+        @media (prefers-reduced-motion: reduce){
+            .js-revela, .js-revela-item{ opacity:1; animation:none; }
+            .progress-bar{ transition:none; }
+        }
+
         /* ---- marca de ícone nos cards: tons do próprio acento, sem confete pastel ---- */
         .icon-badge{
-            width:44px; height:44px; border-radius:.5rem;
+            width:30px; height:30px; border-radius:.4rem;
             display:inline-flex; align-items:center; justify-content:center;
-            font-size:1.15rem; margin-bottom:.6rem; border:1.5px solid transparent;
+            font-size:.95rem; margin-bottom:.5rem; border:1.5px solid transparent;
         }
         .icon-badge.bg-1{ background:var(--accent-soft); color:var(--accent-dark); }
         .icon-badge.bg-2{ background:transparent; color:var(--ink); border-color:var(--line); }
-        .icon-badge.bg-3{ background:var(--signal-soft); color:#7A5112; }
+        .icon-badge.bg-3{ background:var(--signal-soft); color:#7A3216; }
         .icon-badge.bg-4{ background:var(--danger-soft); color:#7A2E1F; }
+
+        /* ---- cartão de estatística: mesma "mata" da sidebar, pra frequência/números-chave se destacarem ---- */
+        .stat-card{
+            background:var(--mata); background-image:linear-gradient(165deg, var(--mata-luz) 0%, var(--mata) 55%);
+            border-radius:.75rem; padding:1.35rem 1.45rem; color:#FBF6E9;
+        }
+        .stat-card .stat-label{
+            display:flex; align-items:center; justify-content:space-between;
+            font-size:.72rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+            color:rgba(251,246,233,.6); margin-bottom:.6rem;
+        }
+        .stat-card .stat-valor{ font-family:'IBM Plex Mono',monospace; font-size:2.4rem; font-weight:700; line-height:1; }
+        .stat-card .stat-sufixo{ font-size:.92rem; font-weight:500; color:rgba(251,246,233,.7); margin-left:.3rem; }
+        .stat-card .progress{ height:6px; background:rgba(251,246,233,.18); border-radius:99px; margin-top:1rem; }
+        .stat-card .progress-bar{ background:var(--blaze) !important; border-radius:99px; }
+        .stat-card .stat-minimo{ font-size:.78rem; color:rgba(251,246,233,.55); margin-top:.55rem; }
+
+        /* ---- selo de data: mês + dia empilhados, pra eventos do calendário ---- */
+        .data-selo{
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            width:44px; height:44px; border-radius:.5rem; flex:none;
+            background:var(--accent-soft); color:var(--accent-dark);
+        }
+        .data-selo .selo-mes{ font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+        .data-selo .selo-dia{ font-family:'IBM Plex Mono',monospace; font-size:1.05rem; font-weight:700; line-height:1.15; }
+
+        /* ---- badge de destaque (ex: "próxima aula") ---- */
+        .badge-destaque{
+            background:var(--signal-soft); color:#7A3216; font-size:.66rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:.04em; padding:.3rem .6rem; border-radius:99px;
+            white-space:nowrap;
+        }
+
+        /* ---- linha do tempo de aulas: ponto preenchido = agora/próxima, oco = as demais ---- */
+        .timeline-aula{ display:flex; gap:.9rem; }
+        .timeline-aula .ponto-col{ display:flex; flex-direction:column; align-items:center; padding-top:.35rem; flex:none; width:10px; }
+        .timeline-aula .ponto{ width:10px; height:10px; border-radius:50%; background:var(--surface); border:2px solid var(--line); flex:none; }
+        .timeline-aula.atual .ponto{ background:var(--accent); border-color:var(--accent); }
+        .timeline-aula .linha{ width:2px; flex:1; background:var(--line); margin-top:.25rem; min-height:1.5rem; }
+        .timeline-aula:last-child .linha{ display:none; }
 
         .alert{ border-radius:.5rem; border:1px solid rgba(34,31,26,.12); }
         .badge{ font-weight:600; border-radius:.35rem; }
@@ -195,90 +367,72 @@
 <body>
 
 {% if user.is_authenticated %}
-<nav class="navbar navbar-expand-lg navbar-dark navbar-brand-bar">
-    <div class="container">
+<!-- sidebar fixa (telas >= 992px) -->
+<aside class="app-sidebar d-none d-lg-flex flex-column">
+    <a class="sidebar-brand" href="{% url 'contas:painel' %}">
+        {% include '_marca.html' %}
+        <span class="marca-texto">
+            <span class="marca-nome">Vereda</span>
+            <span class="marca-sub">Portal acadêmico</span>
+        </span>
+    </a>
+    <ul class="sidebar-nav flex-grow-1">
+        {% include '_nav_links.html' %}
+    </ul>
+    <div class="sidebar-user">
+        <div class="usuario-linha">
+            <span class="avatar-circulo">{% if user.first_name %}{{ user.first_name|first }}{{ user.last_name|first }}{% else %}{{ user.username|slice:":2"|upper }}{% endif %}</span>
+            <span class="usuario-texto">
+                <span class="usuario-nome">{{ user.get_full_name|default:user.username }}</span>
+                <span class="usuario-papel">{{ user.get_tipo_display }}</span>
+            </span>
+        </div>
+        <form action="{% url 'contas:logout' %}" method="post" class="w-100">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-right"></i> Sair</button>
+        </form>
+    </div>
+</aside>
+
+<!-- barra + menu deslizante (telas < 992px) -->
+<nav class="navbar navbar-dark navbar-brand-bar d-lg-none">
+    <div class="container-fluid px-3">
         <a class="navbar-brand" href="{% url 'contas:painel' %}">
-            <i class="bi bi-rulers"></i> Vereda
+            {% include '_marca.html' %} Vereda
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Abrir menu">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="offcanvas offcanvas-lg offcanvas-start" tabindex="-1" id="navbarNav" aria-labelledby="navbarNavLabel">
-            <div class="offcanvas-header d-lg-none">
-                <span class="offcanvas-title" id="navbarNavLabel"><i class="bi bi-rulers"></i> Vereda</span>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
-            </div>
-            <div class="offcanvas-body">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/contas/painel/' %}active{% endif %}" href="{% url 'contas:painel' %}">
-                        <i class="bi bi-house-door-fill"></i> Painel
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if '/biblioteca/' in request.path %}active{% endif %}" href="{% url 'biblioteca:lista' %}">
-                        <i class="bi bi-book-half"></i> Biblioteca Virtual
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if '/diario/' in request.path and 'horarios' not in request.path %}active{% endif %}" href="{% url 'diario:turmas' %}">
-                        <i class="bi bi-journal-text"></i> Diário Escolar
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'horarios' in request.path %}active{% endif %}" href="{% url 'diario:horarios' %}">
-                        <i class="bi bi-calendar-week"></i> Horários
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if '/avisos/' in request.path %}active{% endif %}" href="{% url 'avisos:lista' %}">
-                        <i class="bi bi-megaphone-fill"></i> Avisos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if '/calendario/' in request.path %}active{% endif %}" href="{% url 'calendario:lista' %}">
-                        <i class="bi bi-calendar3"></i> Calendário
-                    </a>
-                </li>
-                {% if user.is_aluno %}
-                <li class="nav-item">
-                    <a class="nav-link {% if '/contas/documentos/' in request.path %}active{% endif %}" href="{% url 'contas:documentos' %}">
-                        <i class="bi bi-file-earmark-text-fill"></i> Documentos
-                    </a>
-                </li>
-                {% endif %}
-                {% if user.is_admin or user.is_secretaria %}
-                <li class="nav-item">
-                    <a class="nav-link {% if '/contas/alunos' in request.path %}active{% endif %}" href="{% url 'contas:alunos_lista' %}">
-                        <i class="bi bi-people-fill"></i> Alunos
-                    </a>
-                </li>
-                {% endif %}
-                {% if user.is_admin %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/">
-                        <i class="bi bi-gear-fill"></i> Administração
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-            <div class="navbar-user-block">
-                <span class="navbar-text text-light me-3">
-                    {{ user.get_full_name|default:user.username }}
-                    <span class="badge bg-light text-dark">{{ user.get_tipo_display }}</span>
-                </span>
-                <form action="{% url 'contas:logout' %}" method="post" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Sair</button>
-                </form>
-            </div>
-            </div>
-        </div>
     </div>
 </nav>
+<div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="navbarNav" aria-labelledby="navbarNavLabel">
+    <div class="offcanvas-header">
+        <span class="offcanvas-title" id="navbarNavLabel">{% include '_marca.html' %} Vereda</span>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+    <div class="offcanvas-body">
+    <ul class="navbar-nav me-auto">
+        {% include '_nav_links.html' %}
+    </ul>
+    <div class="navbar-user-block">
+        <div class="usuario-linha">
+            <span class="avatar-circulo">{% if user.first_name %}{{ user.first_name|first }}{{ user.last_name|first }}{% else %}{{ user.username|slice:":2"|upper }}{% endif %}</span>
+            <span class="usuario-texto">
+                <span class="usuario-nome">{{ user.get_full_name|default:user.username }}</span>
+                <span class="usuario-papel">{{ user.get_tipo_display }}</span>
+            </span>
+        </div>
+        <form action="{% url 'contas:logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Sair</button>
+        </form>
+    </div>
+    </div>
+</div>
 {% endif %}
 
-<div class="container py-4">
+<div class="app-content">
+<div class="container-fluid px-3 px-lg-4 py-4">
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -290,7 +444,55 @@
 
     {% block conteudo %}{% endblock %}
 </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+    "use strict";
+    var semAnimacao = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Painel "surge" na entrada: ações rápidas e cards do masonry, um leve atraso
+    // em cascata — um único momento orquestrado ao carregar, não em cada hover.
+    var acoes = document.querySelectorAll('.acoes-rapidas .btn');
+    var cards = document.querySelectorAll('.grade-painel > .card');
+    var passo = 0;
+    [].forEach.call(acoes, function(el){
+        if (semAnimacao){ return; }
+        el.classList.add('js-revela');
+        el.style.animationDelay = (passo * 35) + 'ms';
+        passo++;
+    });
+    passo = 0;
+    [].forEach.call(cards, function(el){
+        if (semAnimacao){ return; }
+        el.classList.add('js-revela');
+        el.style.animationDelay = (60 + passo * 55) + 'ms';
+        passo++;
+    });
+
+    // Dentro de cada card, os itens de trilha marcam entrada em sequência —
+    // como se os marcadores fossem colocados um a um ao longo do caminho.
+    document.querySelectorAll('.lista-trilha').forEach(function(lista){
+        var itens = lista.querySelectorAll('.item-trilha');
+        [].forEach.call(itens, function(item, i){
+            if (semAnimacao){ return; }
+            item.classList.add('js-revela-item');
+            item.style.animationDelay = (i * 45) + 'ms';
+        });
+    });
+
+    // Barra de frequência: preenche do zero até o valor real, em vez de
+    // já aparecer pronta — o número ao lado já vem certo, só a barra anima.
+    document.querySelectorAll('.progress-bar').forEach(function(barra){
+        if (semAnimacao){ return; }
+        var alvo = barra.style.width;
+        barra.style.width = '0%';
+        requestAnimationFrame(function(){
+            requestAnimationFrame(function(){ barra.style.width = alvo; });
+        });
+    });
+})();
+</script>
 </body>
 </html>

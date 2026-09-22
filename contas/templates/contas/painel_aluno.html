@@ -1,175 +1,189 @@
 {% extends 'base.html' %}
 {% block titulo %}Meu Painel{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-4">Olá, {{ user.get_full_name|default:user.username }}!</h1>
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+    <div>
+        <div class="small fw-semibold mb-1" style="color:var(--ink-soft);letter-spacing:.05em;text-transform:uppercase;">{{ hoje|date:"l, d \d\e F" }}</div>
+        <h1 class="mb-1">{{ saudacao }}, {{ user.first_name|default:user.username }}.</h1>
+        <p class="mb-0" style="color:var(--ink-soft);max-width:44ch;">Seu caminho hoje está organizado. Acompanhe as aulas, os avisos e sua frequência.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'diario:horarios' %}" class="btn btn-primary"><i class="bi bi-calendar-week"></i> Horário completo</a>
+        <a href="{% url 'biblioteca:lista' %}" class="btn" style="background:var(--blaze);border-color:var(--blaze);color:#fff;"><i class="bi bi-book-half"></i> Biblioteca</a>
+    </div>
+</div>
 
 {% if minha_frequencia_geral is not None and minha_frequencia_geral < 75 %}
-<div class="alert alert-danger d-flex align-items-center gap-2 mb-4">
-    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-    <div>
-        <strong>Atenção:</strong> sua frequência geral está em <strong>{{ minha_frequencia_geral }}%</strong>, abaixo do mínimo de 75%.
-        <a href="{% url 'diario:turma' user.turma_id %}" class="alert-link">Veja o detalhe por disciplina</a>.
+<div class="alert alert-warning d-flex align-items-center gap-3 mb-4">
+    <span class="icon-badge bg-3 mb-0"><i class="bi bi-exclamation-lg"></i></span>
+    <div class="flex-grow-1">
+        <strong>Atenção à frequência:</strong> você está com {{ minha_frequencia_geral|floatformat:"-1" }}% de presença em <strong>{{ user.turma }}</strong>. Fique atento ao limite mínimo.
     </div>
+    <a href="{% url 'diario:turma' user.turma_id %}" class="small text-nowrap">Ver detalhes <i class="bi bi-chevron-right"></i></a>
 </div>
 {% endif %}
 
-<!-- Destaque: quadro de avisos + horário do dia, o que o aluno vem ver primeiro -->
-<div class="row g-4 mb-1">
-    <div class="col-lg-7">
-        <div class="card h-100">
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card mb-3">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="icon-badge bg-4"><i class="bi bi-megaphone-fill"></i></div>
-                    <a href="{% url 'avisos:lista' %}" class="small">Ver todos</a>
+                    <h2 class="h6 mb-0"><i class="bi bi-calendar-check me-1"></i> Grade de hoje</h2>
+                    <a href="{% url 'diario:horarios' %}" class="small">Semana completa <i class="bi bi-chevron-right"></i></a>
                 </div>
-                <h2 class="h5">Quadro de avisos</h2>
-                {% if avisos_recentes %}
-                    <div class="vstack gap-3">
-                        {% for aviso in avisos_recentes %}
-                        <div class="{% if not forloop.last %}pb-3 border-bottom{% endif %}">
-                            <div class="d-flex justify-content-between align-items-baseline gap-2">
-                                <strong>{{ aviso.titulo }}</strong>
-                                <span class="text-muted small font-mono flex-shrink-0">{{ aviso.criado_em|date:'d/m' }}</span>
-                            </div>
-                            <div class="text-muted small">{{ aviso.corpo|truncatewords:20 }}</div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted">Nenhum aviso no momento.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-5">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div class="icon-badge bg-2"><i class="bi bi-calendar-check"></i></div>
-                    <a href="{% url 'diario:horarios' %}" class="small">Semana completa</a>
-                </div>
-                <h2 class="h5">Aulas de hoje</h2>
                 {% if not user.turma %}
-                    <p class="text-muted">Você ainda não está matriculado em nenhuma turma.</p>
+                    <p class="text-muted small mb-0">Você ainda não está matriculado em nenhuma turma.</p>
                 {% elif horarios_hoje %}
-                    <div class="vstack gap-2">
-                        {% for h in horarios_hoje %}
-                        <div class="d-flex justify-content-between align-items-baseline {% if not forloop.last %}pb-2 border-bottom{% endif %}">
-                            <span><strong>{{ h.disciplina }}</strong>{% if h.sala %} <span class="text-muted small">· Sala {{ h.sala }}</span>{% endif %}</span>
-                            <span class="text-muted font-mono flex-shrink-0">{{ h.hora_inicio|time:'H:i' }}–{{ h.hora_fim|time:'H:i' }}</span>
+                    {% for linha in horarios_hoje %}
+                    <div class="timeline-aula {% if linha.status == 'atual' %}atual{% endif %}">
+                        <div class="ponto-col">
+                            <span class="ponto"></span>
+                            <span class="linha"></span>
                         </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted">Sem aulas hoje.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<hr class="my-4" style="border-color: var(--line);">
-
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="icon-badge {% if minha_frequencia_geral is not None and minha_frequencia_geral < 75 %}bg-4{% else %}bg-3{% endif %}"><i class="bi bi-bar-chart-fill"></i></div>
-                <h2 class="h5">Minha frequência</h2>
-                {% if minha_frequencia_geral is not None %}
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <div class="progress flex-grow-1" style="height: 10px;">
-                            <div class="progress-bar {% if minha_frequencia_geral < 60 %}bg-danger{% elif minha_frequencia_geral < 75 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ minha_frequencia_geral|stringformat:'s' }}%;"></div>
-                        </div>
-                        <span class="small text-muted fw-semibold font-mono">{{ minha_frequencia_geral }}%</span>
-                    </div>
-                    <p class="text-muted small">Mínimo exigido por disciplina: 75%.</p>
-                {% else %}
-                    <p class="text-muted">Você ainda não está matriculado em nenhuma turma.</p>
-                {% endif %}
-                <a href="{% url 'diario:turma' user.turma_id %}" class="btn btn-primary btn-sm">Ver por disciplina</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="icon-badge bg-1"><i class="bi bi-calendar3"></i></div>
-                <h2 class="h5">Próximos eventos</h2>
-                {% if proximos_eventos %}
-                    <div class="list-group mb-3">
-                        {% for evento in proximos_eventos %}
-                        <div class="list-group-item d-flex justify-content-between">
-                            <span>{{ evento.titulo }}</span>
-                            <span class="text-muted small font-mono">{{ evento.data_inicio|date:'d/m' }}</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted">Nenhum evento agendado.</p>
-                {% endif %}
-                <a href="{% url 'calendario:lista' %}" class="btn btn-primary btn-sm">Ver calendário</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="icon-badge bg-3"><i class="bi bi-journal-text"></i></div>
-                <h2 class="h5">Últimas aulas da sua turma</h2>
-                {% if not user.turma %}
-                    <p class="text-muted">Você ainda não está matriculado em nenhuma turma. Fale com a secretaria.</p>
-                {% elif aulas %}
-                    <div class="list-group mb-3">
-                        {% for aula in aulas %}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{ aula.disciplina }}</strong>
-                                <span class="text-muted">{{ aula.data|date:'d/m/Y' }}</span>
+                        <div class="pb-3 flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <span class="titulo-item">{{ linha.horario.disciplina }}</span>
+                                {% if linha.status == 'atual' %}<span class="badge-destaque">Agora</span>
+                                {% elif linha.status == 'proxima' %}<span class="badge-destaque">Próxima aula</span>{% endif %}
                             </div>
-                            <div class="text-muted small">{{ aula.conteudo|truncatewords:15 }}</div>
+                            <div class="meta">{{ linha.horario.professor.get_full_name|default:linha.horario.professor.username }}{% if linha.horario.sala %} · Sala {{ linha.horario.sala }}{% endif %}</div>
+                            <div class="meta font-mono">{{ linha.horario.hora_inicio|time:'H:i' }}–{{ linha.horario.hora_fim|time:'H:i' }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted small mb-0">Sem aulas hoje.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h2 class="h6 mb-0"><i class="bi bi-calendar3 me-1"></i> Próximos eventos</h2>
+                            <a href="{% url 'calendario:lista' %}" class="small">Todos</a>
+                        </div>
+                        {% if proximos_eventos %}
+                            {% for evento in proximos_eventos %}
+                            <div class="d-flex align-items-center gap-3 py-2">
+                                <span class="data-selo">
+                                    <span class="selo-mes">{{ evento.data_inicio|date:"M"|upper }}</span>
+                                    <span class="selo-dia">{{ evento.data_inicio|date:"d" }}</span>
+                                </span>
+                                <div class="min-w-0">
+                                    <div class="titulo-item">{{ evento.titulo }}</div>
+                                    {% if evento.turma %}<div class="meta">{{ evento.turma }}</div>{% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small mb-0">Nenhum evento agendado.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h2 class="h6 mb-0"><i class="bi bi-book-half me-1"></i> Acervo recente</h2>
+                            <a href="{% url 'biblioteca:lista' %}" class="small">Ver acervo</a>
+                        </div>
+                        {% if livros %}
+                            {% for livro in livros %}
+                            <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="d-flex align-items-center gap-3 py-2 text-decoration-none">
+                                {% if livro.capa %}
+                                <img src="{{ livro.capa.url }}" alt="" style="width:34px;height:44px;object-fit:cover;border-radius:.25rem;flex:none;">
+                                {% else %}
+                                <span class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:34px;height:44px;border-radius:.25rem;background:var(--accent-soft);color:var(--accent-dark);">
+                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                </span>
+                                {% endif %}
+                                <div class="min-w-0">
+                                    <div class="titulo-item text-truncate">{{ livro.titulo }}</div>
+                                    <div class="meta text-truncate">{{ livro.autor }}</div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small mb-0">Nenhum livro disponível ainda.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="stat-card mb-3">
+            <div class="stat-label">
+                Minha frequência
+                <i class="bi bi-graph-down-arrow"></i>
+            </div>
+            {% if minha_frequencia_geral is not None %}
+                <div><span class="stat-valor">{{ minha_frequencia_geral|floatformat:"-1" }}%</span><span class="stat-sufixo">neste bimestre</span></div>
+                <div class="progress"><div class="progress-bar" style="width: {{ minha_frequencia_geral|stringformat:'s' }}%;"></div></div>
+                <div class="stat-minimo">Mínimo obrigatório: 75%</div>
+                <a href="{% url 'diario:turma' user.turma_id %}" class="small d-inline-block mt-2" style="color:#FBF6E9;text-decoration:underline;">Ver por disciplina</a>
+            {% else %}
+                <p class="mb-0" style="color:rgba(251,246,233,.75);">Você ainda não está matriculado em nenhuma turma.</p>
+            {% endif %}
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h2 class="h6 mb-0"><i class="bi bi-megaphone-fill me-1"></i> Avisos</h2>
+                    <a href="{% url 'avisos:lista' %}" class="small">Todos</a>
+                </div>
+                {% if avisos_recentes %}
+                    <div class="lista-trilha">
+                        {% for aviso in avisos_recentes %}
+                        <div class="item-trilha">
+                            <span class="marcador"></span>
+                            <div class="corpo">
+                                <div class="linha-1">
+                                    <span class="titulo-item">{{ aviso.titulo }}</span>
+                                    <span class="meta font-mono">{{ aviso.criado_em|date:'d/m' }}</span>
+                                </div>
+                                <div class="detalhe">{{ aviso.corpo|truncatewords:14 }}</div>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
-                    <a href="{% url 'diario:turma' user.turma_id %}" class="btn btn-primary btn-sm">Ver diário completo</a>
                 {% else %}
-                    <p class="text-muted">Ainda não há aulas registradas para a sua turma.</p>
+                    <p class="text-muted small mb-0">Nenhum aviso no momento.</p>
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card h-100">
+        <div class="card">
             <div class="card-body">
-                <div class="icon-badge bg-1"><i class="bi bi-book-half"></i></div>
-                <h2 class="h5">Livros recentes na biblioteca</h2>
-                {% if livros %}
-                    <div class="list-group mb-3">
-                        {% for livro in livros %}
-                        <a href="{% url 'biblioteca:detalhe' livro.pk %}" class="list-group-item list-group-item-action">
-                            {{ livro.titulo }} <span class="text-muted">— {{ livro.autor }}</span>
-                        </a>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h2 class="h6 mb-0"><i class="bi bi-journal-text me-1"></i> Últimas aulas</h2>
+                    {% if user.turma %}<a href="{% url 'diario:turma' user.turma_id %}" class="small">Diário</a>{% endif %}
+                </div>
+                {% if not user.turma %}
+                    <p class="text-muted small mb-0">Fale com a secretaria pra matricular numa turma.</p>
+                {% elif aulas %}
+                    <div class="lista-trilha">
+                        {% for aula in aulas %}
+                        <div class="item-trilha">
+                            <span class="marcador"></span>
+                            <div class="corpo">
+                                <div class="linha-1">
+                                    <span class="titulo-item">{{ aula.disciplina }}</span>
+                                    <span class="meta font-mono">{{ aula.data|date:'d/m' }}</span>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-muted">Nenhum livro disponível ainda.</p>
+                    <p class="text-muted small mb-0">Ainda não há aulas registradas.</p>
                 {% endif %}
-                <a href="{% url 'biblioteca:lista' %}" class="btn btn-primary btn-sm">Ver biblioteca completa</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="icon-badge bg-2"><i class="bi bi-file-earmark-text-fill"></i></div>
-                <h2 class="h5">Meus documentos</h2>
-                <p class="text-muted">Declaração de matrícula e extrato de frequência em PDF, na hora.</p>
-                <a href="{% url 'contas:documentos' %}" class="btn btn-primary btn-sm">Gerar documentos</a>
             </div>
         </div>
     </div>

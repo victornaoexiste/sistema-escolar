@@ -20,15 +20,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# Em produção/Funnel, defina DJANGO_SECRET_KEY com uma chave própria (não versionada).
-SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY', 'django-insecure-4f84w!gz%=^=%-t8(ay868wa!r@mxk7fkz80yqtzky2)s42r#('
-)
-
 # Por padrão roda em modo desenvolvimento (DEBUG=True). O script tailscale_run.sh
 # define DJANGO_DEBUG=False antes de expor o servidor publicamente pelo Funnel.
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() != 'false'
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# Em produção defina DJANGO_SECRET_KEY (variável de ambiente, nunca versionada).
+# O valor abaixo é apenas um placeholder para desenvolvimento local; em produção
+# (DEBUG=False) a variável de ambiente é obrigatória.
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY', 'django-insecure-chave-de-desenvolvimento-trocar-em-producao'
+)
+if not DEBUG and SECRET_KEY.startswith('django-insecure-'):
+    raise RuntimeError(
+        'Defina a variável de ambiente DJANGO_SECRET_KEY com uma chave própria '
+        'antes de rodar em produção (DEBUG=False).'
+    )
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
 

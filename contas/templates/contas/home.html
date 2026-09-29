@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block titulo %}Vereda — Sistema de gestão escolar{% endblock %}
+{% block conteudo %}
+{% include '_topo_publico.html' %}
+
+<p class="tagline-publica">Sistema de gestão escolar.</p>
+
+<div class="alert alert-warning d-flex flex-wrap align-items-center gap-3 mb-5">
+    <i class="bi bi-megaphone-fill fs-3"></i>
+    <div class="flex-grow-1" style="min-width:220px;">
+        <strong>Levantamento de demanda de cursos técnicos</strong>
+        <div>Conte pra gente qual curso técnico você gostaria de fazer — isso ajuda a decidir quais turmas abrir.</div>
+    </div>
+    <a href="{% url 'demanda:nova' %}" class="btn btn-lg btn-cta-demanda flex-shrink-0">Responder agora</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <h2 class="mb-2" style="font-size:1.4rem;"><i class="bi bi-mortarboard-fill me-1"></i> O que é o Vereda</h2>
+        <p class="text-muted" style="max-width:58ch; font-size:1.03rem;">Sistema de gestão para ensino técnico: diário de aula, frequência, horários, biblioteca virtual, avisos e documentos — tudo num só lugar, para alunos, professores, secretaria e administração.</p>
+    </div>
+</div>
+
+<div class="row mt-5 pt-3">
+    <div class="col-lg-5">
+        <div class="card card-compacto">
+            <div class="card-body">
+                <h2><i class="bi bi-people-fill me-1"></i> Quatro acessos, um sistema</h2>
+                <div class="lista-trilha">
+                    <div class="item-trilha">
+                        <span class="marcador"></span>
+                        <div class="corpo">
+                            <span class="titulo-item">Aluno</span>
+                            <div class="detalhe">Acompanha aulas, horário e frequência, e gera seus próprios documentos.</div>
+                        </div>
+                    </div>
+                    <div class="item-trilha">
+                        <span class="marcador"></span>
+                        <div class="corpo">
+                            <span class="titulo-item">Professor</span>
+                            <div class="detalhe">Lança aula, marca presença e publica avisos.</div>
+                        </div>
+                    </div>
+                    <div class="item-trilha">
+                        <span class="marcador"></span>
+                        <div class="corpo">
+                            <span class="titulo-item">Secretaria</span>
+                            <div class="detalhe">Cadastra alunos, corrige presença e gera documentos.</div>
+                        </div>
+                    </div>
+                    <div class="item-trilha">
+                        <span class="marcador"></span>
+                        <div class="corpo">
+                            <span class="titulo-item">Administração</span>
+                            <div class="detalhe">Acesso completo: cursos, turmas, disciplinas e professores.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

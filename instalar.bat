@@ -16,19 +16,16 @@ cd /d "%~dp0"
 echo === Vereda - instalador (Windows) ===
 
 REM 1. Localizar o Python 3
-where python >nul 2>nul
-if %errorlevel%==0 (
-    set PYTHON=python
-) else (
-    where py >nul 2>nul
-    if %errorlevel%==0 (
-        set PYTHON=py -3
-    ) else (
-        echo Erro: Python 3 nao encontrado.
-        echo Instale em https://www.python.org/downloads/windows/ ^(marque "Add python.exe to PATH" no instalador^) e rode este script de novo.
-        pause
-        exit /b 1
-    )
+REM    (roda "--version" em vez de so "where": o Windows vem com um atalho
+REM    falso "python" que so abre a Microsoft Store e nao executa nada)
+set "PYTHON="
+python --version >nul 2>nul && set "PYTHON=python"
+if not defined PYTHON py -3 --version >nul 2>nul && set "PYTHON=py -3"
+if not defined PYTHON (
+    echo Erro: Python 3 nao encontrado.
+    echo Instale em https://www.python.org/downloads/windows/ ^(marque "Add python.exe to PATH" no instalador^) e rode este script de novo.
+    if not "%AUTO%"=="1" pause
+    exit /b 1
 )
 echo -^> Usando %PYTHON%
 
@@ -38,7 +35,7 @@ if not exist venv (
     %PYTHON% -m venv venv
     if errorlevel 1 (
         echo Erro ao criar o ambiente virtual.
-        pause
+        if not "%AUTO%"=="1" pause
         exit /b 1
     )
 ) else (
@@ -55,13 +52,18 @@ echo -^> Instalando dependencias do requirements.txt
 pip install -r requirements.txt
 if errorlevel 1 (
     echo Erro ao instalar as dependencias.
-    pause
+    if not "%AUTO%"=="1" pause
     exit /b 1
 )
 
 REM 5. Aplicar as migracoes do banco de dados
 echo -^> Aplicando migracoes do banco de dados
 python manage.py migrate
+if errorlevel 1 (
+    echo Erro ao aplicar as migracoes.
+    if not "%AUTO%"=="1" pause
+    exit /b 1
+)
 
 REM 6. Perguntar se quer criar os usuarios de teste
 if "%AUTO%"=="1" (

@@ -1,0 +1,51 @@
+<li class="nav-item">
+    <a class="nav-link {% if request.path == '/contas/painel/' %}active{% endif %}" href="{% url 'contas:painel' %}">
+        <i class="bi bi-house-door-fill"></i> Painel
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {% if '/biblioteca/' in request.path %}active{% endif %}" href="{% url 'biblioteca:lista' %}">
+        <i class="bi bi-book-half"></i> Biblioteca Virtual
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {% if '/diario/' in request.path and 'horarios' not in request.path %}active{% endif %}" href="{% url 'diario:turmas' %}">
+        <i class="bi bi-journal-text"></i> Diário Escolar
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {% if 'horarios' in request.path %}active{% endif %}" href="{% url 'diario:horarios' %}">
+        <i class="bi bi-calendar-week"></i> Horários
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {% if '/avisos/' in request.path %}active{% endif %}" href="{% url 'avisos:lista' %}">
+        <i class="bi bi-megaphone-fill"></i> Avisos
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {% if '/calendario/' in request.path %}active{% endif %}" href="{% url 'calendario:lista' %}">
+        <i class="bi bi-calendar3"></i> Calendário
+    </a>
+</li>
+{% if user.is_aluno %}
+<li class="nav-item">
+    <a class="nav-link {% if '/contas/documentos/' in request.path %}active{% endif %}" href="{% url 'contas:documentos' %}">
+        <i class="bi bi-file-earmark-text-fill"></i> Documentos
+    </a>
+</li>
+{% endif %}
+{% if user.is_admin or user.is_secretaria %}
+<li class="nav-item">
+    <a class="nav-link {% if '/contas/alunos' in request.path %}active{% endif %}" href="{% url 'contas:alunos_lista' %}">
+        <i class="bi bi-people-fill"></i> Alunos
+    </a>
+</li>
+{% endif %}
+{% if user.is_admin %}
+<li class="nav-item">
+    <a class="nav-link" href="/admin/">
+        <i class="bi bi-gear-fill"></i> Administração
+    </a>
+</li>
+{% endif %}

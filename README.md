@@ -51,16 +51,8 @@ python manage.py runserver
 
 Depois abra **http://127.0.0.1:8000/** no navegador.
 
-## Usuários de teste (criados pelo `seed_demo`)
-
-| Papel      | Usuário       | Senha           |
-|------------|---------------|-----------------|
-| Admin      | `admin`       | `741852963ç`    |
-| Secretaria | `secretaria1` | `741852963ç`    |
-| Professor  | `professor1`  | `741852963ç`    |
-| Aluno      | `aluno1`      | `741852963ç`    |
-
-> Troque essas senhas (ou apague esses usuários) antes de apresentar/publicar o projeto de verdade — elas são só para teste local.
+## Credenciais de acesso
+> Para acessar o sistema, defina suas próprias credenciais ao criar o usuário admin via `createsuperuser` ou através do painel de admin. Não há usuários de teste padrão no repositório.
 
 ## Testar com alguém de fora (Tailscale Funnel)
 
